@@ -7,7 +7,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //Application entry point
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(new BoardView(this)); //Create a new boardview
     }
 }
