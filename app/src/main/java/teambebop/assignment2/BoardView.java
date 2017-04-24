@@ -16,10 +16,8 @@ import android.view.MotionEvent;
 
 public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
 
-    private Bitmap icon;
 
-    private boolean[][] grids;
-    
+
     BoardView(Context context) {
         //Constructor for the surface
         super(context);
@@ -41,7 +39,7 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
     public void surfaceCreated(SurfaceHolder holder) {
         //Initialization for when the surface is created
         System.out.println("SurfaceCreated()");
-        icon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+        //icon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
     }
 
     @Override
