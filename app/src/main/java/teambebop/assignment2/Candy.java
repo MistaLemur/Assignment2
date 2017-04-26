@@ -6,5 +6,5 @@ package teambebop.assignment2;
 
 public class Candy {
 
-    /* it does nothing so far */
+    /* it does everything *** */
 }
