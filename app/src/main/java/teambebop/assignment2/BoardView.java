@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.MotionEvent;
+import android.content.Context;
 
 /**
  * Created by d4rk3_000 on 4/23/2017.
@@ -59,10 +60,18 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
     public boolean onTouchEvent(MotionEvent event) {
         //Event listening
 
-        System.out.println("touch event");
+        int action = event.getAction() & event.ACTION_MASK;
+
+        System.out.println("touch event: " + action);
+
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
+
         }
 
-        return false;
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+
+        }
+
+        return true;
     }
 }
