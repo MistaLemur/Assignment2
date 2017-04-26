@@ -10,7 +10,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.content.Context;
-
+//lol
 /**
  * Created by d4rk3_000 on 4/23/2017.
  */
