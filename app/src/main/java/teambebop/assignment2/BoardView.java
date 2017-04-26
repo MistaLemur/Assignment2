@@ -17,11 +17,12 @@ import android.content.Context;
 
 public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
 
-
+    Context thisContext;
 
     BoardView(Context context) {
         //Constructor for the surface
         super(context);
+        thisContext = context;
         getHolder().addCallback(this);
         setFocusable(true);
         setWillNotDraw(false);
