@@ -9,7 +9,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.MotionEvent;
-import android.content.Context;
+
+import java.util.List;
+
 //lol
 /**
  * Created by d4rk3_000 on 4/23/2017.
@@ -18,6 +20,12 @@ import android.content.Context;
 public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
 
     Context thisContext;
+    Bitmap icons[];
+    List<Integer> indices;
+    int prevX;
+    int prevY;
+    int startRowNum;
+    int startColNum;
 
     BoardView(Context context) {
         //Constructor for the surface
@@ -34,6 +42,23 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
         //Called when drawing shit.
         System.out.println("onDraw()");
         canvas.drawColor(Color.WHITE);
+
+       // Drawing the whole screen. until we get one screen into another
+        Rect rect = new Rect();
+
+        int width = getWidth();
+        int height = getHeight();
+
+        int rowHeight = height / 9;//3
+        int columnWidth = width / 9;//2
+
+        for(int i = 0; i < 9; ++i) { //3
+            for(int j = 0; j < 9; ++j) { //2
+                rect.set(j * columnWidth, i * rowHeight, (j + 1) * columnWidth, (i + 1) * rowHeight);
+                canvas.drawBitmap(icons[indices.get(i * 2 + j)], null, rect, null);
+            }
+        }
+
     }
 
 
@@ -48,6 +73,7 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         //Surface changed. Like when changing between landscape and portrait modes.
 
+
     }
 
 
@@ -60,19 +86,56 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         //Event listening
+        System.out.println("Touch event function");
+
+        int currX; // currentX coor
+        int currY;  // current Y coor
+        int endRowNum = 0;
+        int endColNum = 0;
+        int width = getWidth();
+        int height = getHeight();
+
+        int columnWidth = width / 9;
+        int rowHeight = height / 9;
 
         int action = event.getAction() & event.ACTION_MASK;
 
         System.out.println("touch event: " + action);
 
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) { //touchdown
+            prevX = (int) event.getX();
+            prevY = (int) event.getY();
 
+            startRowNum = prevY / rowHeight;
+            startColNum = prevX / columnWidth;
         }
 
-        if (event.getAction() == MotionEvent.ACTION_UP) {
+        else if (event.getAction() == MotionEvent.ACTION_UP) { //liftup
+            currX = (int) event.getX();
+            currY = (int) event.getY();
 
+            endRowNum = currY / rowHeight;
+            endColNum = currX / columnWidth;
+
+            System.out.println("StartRowNum : " + startRowNum + " StartColNum: " + startColNum);
+            System.out.println("EndRowNum: " + endRowNum + " EndColNum: " + endColNum);
+
+            // continue 4301134
         }
 
         return true;
     }
+
+    private void swapGrids(int startRow, int startCol, int endRow, int endCol) {
+        int src_index = startRow * 2 + startCol;
+        int dest_index = endRow * 2 + endCol;
+
+        int srcVal = indices.get(src_index);
+        int destVal = indices.get(dest_index);
+
+        indices.set(src_index, destVal);
+        indices.set(dest_index, srcVal);
+    }
+
 }
+

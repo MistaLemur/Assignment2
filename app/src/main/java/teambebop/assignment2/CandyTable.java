@@ -8,6 +8,7 @@ import android.graphics.Color;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.io. * ;
 /**
  * Created by d4rk3_000 on 4/23/2017.
  */
@@ -323,6 +324,7 @@ public class CandyTable {
     public void addScore(double amount){
         //This is just for incrementing the score.
         score += amount;
+
     }
 
     public int[] screenCoordsToGridCoords(double x, double y){
@@ -332,6 +334,8 @@ public class CandyTable {
         int gridX = (int)(x * sizeX);
         int gridY = (int)(y * sizeY);
         int[] coords = new int[]{gridX, gridY};
+
+
         return coords;
     }
 
