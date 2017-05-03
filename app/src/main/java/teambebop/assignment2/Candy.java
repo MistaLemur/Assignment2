@@ -14,30 +14,29 @@ import android.graphics.Canvas;
 public class Candy {
 
     String color;
-    Rect iconRect;
-    Rect touchRect;
+    Rect iconRect; // inside the rect drawing candy
+    Rect touchRect; // the big square
 
     int type = -1;
     /*
-    type is just an int that corresponds to the sprite.
+    type is just an int that corresponds to the sprite. for color
     */
 
     int x,y;
 
-    Bitmap icon;
 
-    public static Bitmap icons[];
+    public static Bitmap icons[]; //global variable in the class
     public static int numTypes = 4;
 
 
-    public Candy(){
+    public Candy(){ //constructors
     }
 
-    public Candy(int idType, Context _context){
-        type = idType;
-        loadSprites(_context);
-        initRects();
-        icon = icons[type];
+    public Candy(int idType, Context _context){ //create new candy --- constructors
+        type = idType;// coresspond to color
+        loadSprites(_context); // call code
+        initRects(); // create new rectangles
+
     }
 
     public Candy(String _color, Rect _rect1, Rect _rect2, int idType, Context _context){
@@ -51,7 +50,7 @@ public class Candy {
         loadSprites(_context);
         initRects();
 
-        icon = icons[type];
+
     }
 
     public void initRects(){
@@ -70,16 +69,16 @@ public class Candy {
         }
     }
 
-    public void flush(){
+    public void flush(){ // only called when deleted candy. empty for now
 
     }
 
-    public void drawToCanvas(Canvas canvas){
-        if(icon != null && iconRect != null)
-            canvas.drawBitmap(icons[type], null, iconRect, null);
+    public void drawToCanvas(Canvas canvas){ //draw candy to canvas
+        if(icons != null && iconRect != null)
+            canvas.drawBitmap(icons[type], null, iconRect, null); // called from candy table
     }
 
-    public void debugTap(){
+    public void debugTap(){ //debugging   just tells where it touched.
         System.out.println("CANDY: (" + type + ") <"+x+", "+y+">");
         System.out.println(iconRect.flattenToString());
     }

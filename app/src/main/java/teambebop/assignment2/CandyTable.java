@@ -21,19 +21,19 @@ public class CandyTable {
     int screenHeight;
 
     //screen pixel offset variables for drawing
-    int offX = 0;
+    int offX = 0; // for a new window screen corner to candy corner
     int offY = 0;
 
     //border width of the screen
-    int screenBorder = 0;
+    int screenBorder = 0; //the width
 
-    Context appContext;
+    Context appContext; // get drawing of bitmaps
 
 
     public ArrayList<Candy> candyList = new ArrayList<Candy>();
     //This is a 1d arraylist of candy references, just to make stuff easier to iterate through.
 
-    public ArrayList<ArrayList<Candy>> candyBoard = new ArrayList<ArrayList<Candy>>();
+    public ArrayList<ArrayList<Candy>> candyBoard = new ArrayList<ArrayList<Candy>>(); // list of array list. in columns.
     //The candyBoard is an arraylist of arraylists, kind of like a 2d array.
     //To read from this arraylist, do...
     // candyBoard.get(X).get(Y);
@@ -41,11 +41,12 @@ public class CandyTable {
 
     double score = 0;
 
-    public CandyTable(){
+    public CandyTable(){  //constructor
         generateNewBoard();
     }
 
-    public CandyTable(int x, int y, Context context){
+    public CandyTable(int x, int y, Context context){ // context from candy create cndy tables of any size
+
         sizeX = x;
         sizeY = y;
         appContext = context;
@@ -55,32 +56,32 @@ public class CandyTable {
     public void generateNewBoard(){
         //This fills the board with new candies
         //Cleanup any preexisting stuffs.
-        for(ArrayList A:candyBoard){
+        for(ArrayList A:candyBoard){ //cleans everything empty each column
             A.clear();
         }
-        candyBoard.clear();
+        candyBoard.clear(); // erase the actual column
 
         for(Candy C:candyList){
             C.flush(); //cleanup any extra memory allocated to the candies.
         }
 
-        candyList.clear();
+        candyList.clear(); //there should be nothing that reference to candy
 
         //now build the new board's arraylists.
-        for(int i = 0; i < sizeX; i++){
+        for(int i = 0; i < sizeX; i++){ //# of columns
             //build the column list
             ArrayList<Candy> column = new ArrayList<Candy>(9);
 
-            for(int j=0; j < sizeY; j++){
+            for(int j=0; j < sizeY; j++){ //# of rows
                 //fill in the columns.
-                Candy candy = generateNewCandy(i, j);
+                Candy candy = generateNewCandy(i, j); //new object
                 //do candy initialization shit here.
                 //maybe add animations here too?
                 //Maybe a board should have an initial animation of all of the columns falling.
                 column.add(candy);
             }
 
-            candyBoard.add(column);
+            candyBoard.add(column); //adding columns to the candy board
         }
     }
 
@@ -92,7 +93,7 @@ public class CandyTable {
          * ::ALGORITHM::
          * 1. Perform the swapping operation
          * 2. Check for any newly created rows.
-         * 3. If there are newly created rows, then delete all candies in the row and award points
+         * 3. If there are newly created rows, then delete all candies in the row and award points popcandy
          * 4. Otherwise, undo the swapping operation.
          * 5. Apply any animations if necessary.
          */
@@ -107,14 +108,14 @@ public class CandyTable {
         if(newY < 0 || newY >= sizeY) return;
 
         //swap the pieces here
-        Candy initial = candyBoard.get(x).get(y);
-        Candy swapped = candyBoard.get(newX).get(newY);
-        candyBoard.get(x).set(y, swapped);
-        candyBoard.get(newX).set(newY, initial);
+        Candy initial = candyBoard.get(x).get(y); // initial position
+        Candy swapped = candyBoard.get(newX).get(newY); // destination position
+        candyBoard.get(x).set(y, swapped); //initi
+        candyBoard.get(newX).set(newY, initial); // swapping the other
 
-        int[] rowLengths = checkRow(newX, newY, candyBoard);
+        int[] rowLengths = checkRow(newX, newY, candyBoard); // chcking the rows
         int combo = 1;
-        if(rowLengths[0] >= 3 || rowLengths[1] >= 3){ //successful swap
+        if(rowLengths[0] >= 3 || rowLengths[1] >= 3){ //successful swap to check // 0 horizontal // 1 vertical
             //successful swap.
             initial.x = newX;
             initial.y = newY;
@@ -146,11 +147,11 @@ public class CandyTable {
         if(x < 0 || x >= sizeX) return;
         if(y < 0 || y >= sizeY) return;
 
-        Candy initial = candyBoard.get(x).get(y);
+        Candy initial = candyBoard.get(x).get(y); // it saves the initial
         ArrayList<Candy> candiesToPop = new ArrayList<Candy>();
-        getCandiesInRow(x, y,  0,1,  initial, candyBoard, candiesToPop);
-        getCandiesInRow(x, y,  0,-1,  initial, candyBoard, candiesToPop);
-        getCandiesInRow(x, y,  1,0,  initial, candyBoard, candiesToPop);
+        getCandiesInRow(x, y,  0,1,  initial, candyBoard, candiesToPop); // you have the board
+        getCandiesInRow(x, y,  0,-1,  initial, candyBoard, candiesToPop);// checks position. saves candy if correct color and it continues the rest of the row or column
+        getCandiesInRow(x, y,  1,0,  initial, candyBoard, candiesToPop);// calls it four times for each direction
         getCandiesInRow(x, y,  -1,0,  initial, candyBoard, candiesToPop);
 
         double points = candiesToPop.size() * candiesToPop.size() * combo * combo / 4.0d;
@@ -163,7 +164,7 @@ public class CandyTable {
             removeCandy(candy);
 
             //shift candies
-            shiftCandyColumn(candy.x, candy.y);
+            shiftCandyColumn(candy.x, candy.y); // when candy falls
 
             //make new candy at top of column
             Candy newCandy = generateNewCandy(candy.x, sizeY-1);
@@ -190,7 +191,7 @@ public class CandyTable {
         candyBoard.get(candy.x).set(candy.y, null);
     }
 
-    public void getCandiesInRow(int x, int y, int dx, int dy, Candy initial,
+    public void getCandiesInRow(int x, int y, int dx, int dy, Candy initial, //not finished
             ArrayList<ArrayList<Candy>> board, ArrayList<Candy> candies) {
 
         //This will add any found candies to the given candies list, since objects are passed by reference in java.
@@ -205,10 +206,10 @@ public class CandyTable {
             return;
 
 
-        }
+        }//not finshed
     }
 
-    public int[] checkRow(int x, int y, ArrayList<ArrayList<Candy>> board){
+    public int[] checkRow(int x, int y, ArrayList<ArrayList<Candy>> board){ // to count how many candies of the same colors.
         /*
          This function checks for any rows that include the given position at x,y.
          It checks for both vertical and horizontal rows.
@@ -248,7 +249,7 @@ public class CandyTable {
         }
     }
 
-    public int computeRemainingMoves() {
+    public int computeRemainingMoves() { // copies table and test every single possible move. to end the game
         //This function computes and saves possible moves that yields points.
         //it returns the # of possible moves.
         //The move class just stores x and y, and a move direction.
@@ -328,7 +329,7 @@ public class CandyTable {
         return movesLeft;
     }
 
-    public ArrayList<ArrayList<Candy>> cloneBoard(){
+    public ArrayList<ArrayList<Candy>> cloneBoard(){ // just clones a board. ????
         //This function makes a shallow copy of the board. This is useful for checking potential moves.
         ArrayList<ArrayList<Candy>> clone = new ArrayList<ArrayList<Candy>>();
         for(ArrayList<Candy> column:candyBoard){
@@ -337,7 +338,7 @@ public class CandyTable {
         return clone;
     }
 
-    public void boardSwapCandies(int x, int y, int dx, int dy, ArrayList<ArrayList<Candy>> board ){
+    public void boardSwapCandies(int x, int y, int dx, int dy, ArrayList<ArrayList<Candy>> board ){ // swapping to any board
         //This function swaps two candies for the given board.
         //It does not process any row detection or any score processing.
 
@@ -350,7 +351,7 @@ public class CandyTable {
         board.get(newX).set(newY, initial);
     }
 
-    public void addScore(double amount){
+    public void addScore(double amount){ //
         //This is just for incrementing the score.
         score += amount;
 
@@ -360,7 +361,7 @@ public class CandyTable {
         score = newScore;
     }
 
-    public int[] screenCoordsToGridCoords(double x, double y){
+    public int[] screenCoordsToGridCoords(double x, double y){ // not needed
         //This function converts screen percentage coordinates to grid index coordinates.
         //So the function input, x and y, should both ONLY range from 0.0 to 1.0
 
@@ -371,7 +372,7 @@ public class CandyTable {
         return coords;
     }
 
-    public Candy generateNewCandy(int x, int y){
+    public Candy generateNewCandy(int x, int y){// creates new candy.
         Random rand = new Random();
         int type = rand.nextInt(Candy.numTypes);
 
@@ -382,7 +383,7 @@ public class CandyTable {
         return candy;
     }
 
-    public void setCandyXY(Candy candy, int x, int y){
+    public void setCandyXY(Candy candy, int x, int y){ //making smaller square in rectangle
         /*
         This function is for setting the x,y coordinates of the candy in the table.
         This also updates the candy's drawing position and touching position.
@@ -429,7 +430,7 @@ public class CandyTable {
         }
     }
 
-    public void updateScreenDims(int newWidth, int newHeight){
+    public void updateScreenDims(int newWidth, int newHeight){ // if screen has changed, recalculate the rect of candy
         //This updates all of the candies' rects when the screen dimensions change
         boolean changed = false;
 
@@ -446,7 +447,7 @@ public class CandyTable {
         }
     }
 
-    public void drawToCanvas(Canvas canvas){
+    public void drawToCanvas(Canvas canvas){ // drawing  candy to canvas. write down score.
         //This is called by the board view; canvas is also obtained from the board view.
 
         //Draw any border or background here. any kind of fanciness.
@@ -461,5 +462,7 @@ public class CandyTable {
 
 
         //Draw anything else here?
+
+
     }
 }

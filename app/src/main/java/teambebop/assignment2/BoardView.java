@@ -76,7 +76,7 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
 
 
     @Override
-    public void surfaceCreated(SurfaceHolder holder) {
+    public void surfaceCreated(SurfaceHolder holder) { // when you start your app created new candytable
         //Initialization for when the surface is created
         System.out.println("SurfaceCreated()");
         //icon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
@@ -100,7 +100,7 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public boolean onTouchEvent(MotionEvent event) { // unchanged  DO swapping
         //Event listening
         //System.out.println("Touch event function");
 
@@ -142,7 +142,31 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
             System.out.println("EndRowNum: " + endRowNum + " EndColNum: " + endColNum);
 
             // continue 4301134
-        }
+            if(startRowNum == endRowNum){
+                if(startColNum >endColNum){
+                    System.out.println("R to L"):
+                    swapGrids(startRowNum, startColNum, endRowNum, )
+                }
+                else if(startColNum <endColNum){
+                    System.out.println("L to R"):
+                }else{
+                    System.out.println("Action unspecified");
+                }
+            else if (startColNum == endColNum){
+                    if(startColNum >endRowNum){
+                        System.out.println("Bottom to Top"):
+                    }
+                    else if(startColNum <endRowNum){
+                        System.out.println("Top to Bottom"):
+                    }else{
+                        System.out.println("Action unspecified");
+                    }
+                }
+                else{
+                    System.out.println("It doesn't make sense");
+
+                }
+            }
 
         return true;
     }
