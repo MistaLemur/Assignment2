@@ -100,6 +100,7 @@ public class CandyTable {
         candyBoard.get(newX).set(newY, initial);
 
         int[] rowLengths = checkRow(newX, newY, candyBoard);
+        int combo = 1;
         if(rowLengths[0] >= 3 || rowLengths[1] >= 3){ //successful swap
             //successful swap.
             initial.x = newX;
@@ -108,7 +109,7 @@ public class CandyTable {
             swapped.y = y;
 
             //Find all candies in the rows to pop
-            popCandies(x, y);
+            popCandies(x, y, combo);
 
             //swapping animation
             //popping animation
@@ -159,7 +160,7 @@ public class CandyTable {
         ArrayList<Candy> column = candyBoard.get(x);
         for(int i = y; y < sizeY - 1; y++){
             Candy candy = column.get(i+1);
-            Candy.y = i;
+            candy.y = i;
             column.set(i, candy);
         }
         column.set(sizeY - 1, null); //for the time being, put a null into the topmost position.
@@ -230,6 +231,7 @@ public class CandyTable {
 
     public int computeRemainingMoves() {
         //This function computes and saves possible moves that yields points.
+        //it returns the # of possible moves.
         //The move class just stores x and y, and a move direction.
 
         /*
@@ -253,47 +255,55 @@ public class CandyTable {
                 //3. undo the swap
 
                 //test swapping north
-                boardSwapCandies(x, y,  0,1,  clone);
-                rowLengths = checkRow(x, y, clone);
-                if(rowLengths[0] > 0 || rowLengths[1] > 0){
-                    //successful move
-                    movesLeft ++;
-                    //maybe save the move here...
+                if(y < sizeY-1) {
+                    boardSwapCandies(x, y, 0, 1, clone);
+                    rowLengths = checkRow(x, y + 1, clone);
+                    if (rowLengths[0] > 0 || rowLengths[1] > 0) {
+                        //successful move
+                        movesLeft++;
+                        //maybe save the move here...
+                    }
+                    boardSwapCandies(x, y, 0, 1, clone); //undo the swap
                 }
-                boardSwapCandies(x, y,  0,1,  clone); //undo the swap
 
 
                 //test swapping south
-                boardSwapCandies(x, y,  0,-1,  clone);
-                rowLengths = checkRow(x, y, clone);
-                if(rowLengths[0] > 0 || rowLengths[1] > 0){
-                    //successful move
-                    movesLeft ++;
-                    //maybe save the move here...
+                if(y > 0) {
+                    boardSwapCandies(x, y, 0, -1, clone);
+                    rowLengths = checkRow(x, y - 1, clone);
+                    if (rowLengths[0] > 0 || rowLengths[1] > 0) {
+                        //successful move
+                        movesLeft++;
+                        //maybe save the move here...
+                    }
+                    boardSwapCandies(x, y, 0, -1, clone); //undo the swap
                 }
-                boardSwapCandies(x, y,  0,-1,  clone); //undo the swap
 
 
                 //test swapping east
-                boardSwapCandies(x, y,  1,0,  clone);
-                rowLengths = checkRow(x, y, clone);
-                if(rowLengths[0] > 0 || rowLengths[1] > 0){
-                    //successful move
-                    movesLeft ++;
-                    //maybe save the move here...
+                if(x < sizeX-1) {
+                    boardSwapCandies(x, y, 1, 0, clone);
+                    rowLengths = checkRow(x + 1, y, clone);
+                    if (rowLengths[0] > 0 || rowLengths[1] > 0) {
+                        //successful move
+                        movesLeft++;
+                        //maybe save the move here...
+                    }
+                    boardSwapCandies(x, y, 1, 0, clone); //undo the swap
                 }
-                boardSwapCandies(x, y,  1,0,  clone); //undo the swap
 
 
                 //test swapping west
-                boardSwapCandies(x, y,  -1,0,  clone);
-                rowLengths = checkRow(x, y, clone);
-                if(rowLengths[0] > 0 || rowLengths[1] > 0){
-                    //successful move
-                    movesLeft ++;
-                    //maybe save the move here...
+                if(x > 0) {
+                    boardSwapCandies(x, y, -1, 0, clone);
+                    rowLengths = checkRow(x - 1, y, clone);
+                    if (rowLengths[0] > 0 || rowLengths[1] > 0) {
+                        //successful move
+                        movesLeft++;
+                        //maybe save the move here...
+                    }
+                    boardSwapCandies(x, y, -1, 0, clone); //undo the swap
                 }
-                boardSwapCandies(x, y,  -1,0,  clone); //undo the swap
             }
         }
         return movesLeft;
@@ -325,6 +335,10 @@ public class CandyTable {
         //This is just for incrementing the score.
         score += amount;
 
+    }
+
+    public void setScore(double newScore){
+        score = newScore;
     }
 
     public int[] screenCoordsToGridCoords(double x, double y){

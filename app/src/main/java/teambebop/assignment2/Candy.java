@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.content.Context;
+import android.graphics.Canvas;
 
 
 /**
@@ -15,8 +16,17 @@ public class Candy {
     String color;
     Rect rect;
     Rect rect1;
-    Bitmap icons[];
 
+    int x,y;
+
+    Bitmap icon;
+
+    public static Bitmap icons[];
+
+
+    public Candy(){
+
+    }
 
     public Candy(String _color, Rect _rect1, Rect _rect2, Bitmap _icon, Context _context){
         this.color = _color;
@@ -31,10 +41,16 @@ public class Candy {
 
 
     }
-
-
-
     // getting touched
+
+    public void flush(){
+
+    }
+
+    public void drawToCanvas(Canvas canvas){
+
+    }
+
 
 
 
