@@ -1,22 +1,34 @@
 package teambebop.assignment2;
 
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
-
-import java.lang.reflect.Array;
+import java.util.Random;
 import java.util.ArrayList;
-import java.io. * ;
+import android.content.Context;
+import android.graphics.Rect;
 /**
  * Created by d4rk3_000 on 4/23/2017.
  */
 
 public class CandyTable {
 
+    //grid size variables
     int sizeX = 9;
     int sizeY = 9;
+
+    //screen size variables
+    int screenWidth;
+    int screenHeight;
+
+    //screen pixel offset variables for drawing
+    int offX = 0;
+    int offY = 0;
+
+    //border width of the screen
+    int screenBorder = 0;
+
+    Context appContext;
+
 
     public ArrayList<Candy> candyList = new ArrayList<Candy>();
     //This is a 1d arraylist of candy references, just to make stuff easier to iterate through.
@@ -33,9 +45,10 @@ public class CandyTable {
         generateNewBoard();
     }
 
-    public CandyTable(int x, int y){
+    public CandyTable(int x, int y, Context context){
         sizeX = x;
         sizeY = y;
+        appContext = context;
         generateNewBoard();
     }
 
@@ -56,7 +69,7 @@ public class CandyTable {
         //now build the new board's arraylists.
         for(int i = 0; i < sizeX; i++){
             //build the column list
-            ArrayList<Candy> column = new ArrayList<Candy>();
+            ArrayList<Candy> column = new ArrayList<Candy>(9);
 
             for(int j=0; j < sizeY; j++){
                 //fill in the columns.
@@ -109,7 +122,7 @@ public class CandyTable {
             swapped.y = y;
 
             //Find all candies in the rows to pop
-            popCandies(x, y, combo);
+            //popCandies(x, y, combo);
 
             //swapping animation
             //popping animation
@@ -125,6 +138,11 @@ public class CandyTable {
 
     public void popCandies(int x, int y, int combo){
         //This pops all candies in rows that include the given coordinates.
+        /*
+        This gets all of the candies in the row directions, and then
+        awards points based on how many candies are found.
+        Then it removes all of the candies found and shifts columns as necessary.
+         */
         if(x < 0 || x >= sizeX) return;
         if(y < 0 || y >= sizeY) return;
 
@@ -167,6 +185,7 @@ public class CandyTable {
     }
 
     public void removeCandy(Candy candy){
+        candy.flush();
         candyList.remove(candy);
         candyBoard.get(candy.x).set(candy.y, null);
     }
@@ -349,18 +368,82 @@ public class CandyTable {
         int gridY = (int)(y * sizeY);
         int[] coords = new int[]{gridX, gridY};
 
-
         return coords;
     }
 
     public Candy generateNewCandy(int x, int y){
-        Candy candy = new Candy();
+        Random rand = new Random();
+        int type = rand.nextInt(Candy.numTypes);
+
+        Candy candy = new Candy(type, appContext);
         //Generate a random new candy, with array position x and y.
-        candy.x = x;
-        candy.y = y;
-        candyBoard.get(x).set(y, candy);
+        setCandyXY(candy, x, y);
         candyList.add(candy);
         return candy;
+    }
+
+    public void setCandyXY(Candy candy, int x, int y){
+        /*
+        This function is for setting the x,y coordinates of the candy in the table.
+        This also updates the candy's drawing position and touching position.
+        It's necessary that candies have a separate drawing rect and touching rect, because
+        the touch box might be of a different aspect ratio from the drawing box.
+         */
+
+        //create two new rects here!
+        //one is for the sprites
+        //the other is for touch
+        int colWidth = screenWidth / sizeX;
+        int rowHeight = screenHeight / sizeY;
+
+        //first create touch rect
+        Rect touchRect = new Rect();
+        touchRect.set(x * colWidth + offX, y * rowHeight + offY,
+                (x+1) * colWidth + offX, (y+1) * rowHeight + offY);
+
+        //then create the draw rect as a square centered in the touch rect.
+        int cX = touchRect.centerX();
+        int cY = touchRect.centerY();
+        int width = touchRect.width();
+        int height = touchRect.height();
+
+        int borderGap = 2;
+        int drawWidth = width-borderGap;
+        if(height < width) drawWidth = height-borderGap;
+        int xOff = (width - drawWidth)/2;
+        int yOff = (height - drawWidth)/2;
+
+        Rect drawRect = new Rect();
+        drawRect.set(cX - width/2 + xOff + offX, cY - height/2 + yOff + offY,
+                cX - width/2 + xOff + offX + drawWidth, cY - width/2 + yOff + offY + drawWidth);
+
+        candy.touchRect = touchRect;
+        candy.iconRect = drawRect;
+        candy.x = x;
+        candy.y = y;
+
+        if(candyBoard.size() > x){
+            if(candyBoard.get(x).size() > y){
+                candyBoard.get(x).set(y, candy);
+            }
+        }
+    }
+
+    public void updateScreenDims(int newWidth, int newHeight){
+        //This updates all of the candies' rects when the screen dimensions change
+        boolean changed = false;
+
+        if(screenWidth != newWidth || screenHeight != newHeight) changed = true;
+        screenWidth = newWidth-screenBorder;
+        screenHeight = newHeight-screenBorder;
+        offX = screenBorder/2;
+        offY = screenBorder/2;
+
+        if(changed) {
+            for (Candy candy : candyList) {
+                setCandyXY(candy, candy.x, candy.y);
+            }
+        }
     }
 
     public void drawToCanvas(Canvas canvas){
@@ -379,5 +462,4 @@ public class CandyTable {
 
         //Draw anything else here?
     }
-
 }

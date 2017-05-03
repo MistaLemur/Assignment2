@@ -21,11 +21,14 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
 
     Context thisContext;
     Bitmap icons[];
+
     List<Integer> indices;
     int prevX;
     int prevY;
     int startRowNum;
     int startColNum;
+
+    CandyTable candyTable;
 
     BoardView(Context context) {
         //Constructor for the surface
@@ -43,6 +46,15 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
         System.out.println("onDraw()");
         canvas.drawColor(Color.WHITE);
 
+        int width = getWidth();
+        int height = getHeight();
+
+        if(candyTable != null) {
+            candyTable.updateScreenDims(width, height);
+            candyTable.drawToCanvas(canvas);
+        }
+        /*
+        //deprecated example code from discussion
        // Drawing the whole screen. until we get one screen into another
         Rect rect = new Rect();
 
@@ -58,6 +70,7 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
                 canvas.drawBitmap(icons[indices.get(i * 2 + j)], null, rect, null);
             }
         }
+        */
 
     }
 
@@ -67,6 +80,9 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
         //Initialization for when the surface is created
         System.out.println("SurfaceCreated()");
         //icon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+        if(candyTable == null) {
+            candyTable = new CandyTable(9, 9, thisContext);
+        }
     }
 
     @Override
@@ -86,7 +102,7 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         //Event listening
-        System.out.println("Touch event function");
+        //System.out.println("Touch event function");
 
         int currX; // currentX coor
         int currY;  // current Y coor
@@ -100,14 +116,19 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
 
         int action = event.getAction() & event.ACTION_MASK;
 
-        System.out.println("touch event: " + action);
+        //System.out.println("touch event: " + action);
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) { //touchdown
+            Rect rect = new Rect();
+
             prevX = (int) event.getX();
             prevY = (int) event.getY();
 
             startRowNum = prevY / rowHeight;
             startColNum = prevX / columnWidth;
+
+            Candy candy = candyTable.candyBoard.get(startColNum).get(startRowNum);
+            candy.debugTap();
         }
 
         else if (event.getAction() == MotionEvent.ACTION_UP) { //liftup
