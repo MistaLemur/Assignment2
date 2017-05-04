@@ -128,7 +128,8 @@ public class CandyTable {
 
 
             //Find all candies in the rows to pop
-            //popCandies(x, y, combo);
+            popCandies(x, y, combo);
+
 
             //swapping animation
             //popping animation
@@ -175,7 +176,15 @@ public class CandyTable {
 
             //make new candy at top of column
             Candy newCandy = generateNewCandy(candy.x, sizeY-1);
-            //apply any animations here...
+
+
+
+            // Assign new candies here
+            setCandyXY( newCandy,x , y); // (Candy candy, x,y );
+
+
+            //shift candies again.
+            shiftCandyColumn(candy.x, candy.y); // when candy falls
 
         }
     }
