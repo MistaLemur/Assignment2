@@ -127,6 +127,8 @@ public class CandyTable {
 
 
         }else{ //failed swap
+            candyBoard.get(x).set(y, initial); //initi
+            candyBoard.get(newX).set(newY, swapped); // swapping the other
             //do an animation for failed swap??
         }
 

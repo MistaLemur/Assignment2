@@ -140,6 +140,12 @@ else if (touchup){
 
             if (prevY == destY && prevX == destX){
                 System.out.println("Didn't move the candy");}
+
+
+            // if candies dont match
+
+
+
             /*
 
             if ("candies match function") {
