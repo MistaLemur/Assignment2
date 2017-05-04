@@ -172,7 +172,7 @@ public class CandyTable {
             removeCandy(candy);
 
             //shift candies
-            shiftCandyColumn(candy.x, candy.y); // when candy falls
+            //shiftCandyColumn(candy.x, candy.y); // when candy falls
 
             //make new candy at top of column
             Candy newCandy = generateNewCandy(candy.x, sizeY-1);
