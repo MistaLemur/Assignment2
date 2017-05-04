@@ -114,8 +114,13 @@ public class CandyTable {
 
         int[] rowLengths = checkRow(newX, newY, candyBoard); // chcking the rows
         System.out.println("Found rows: " + rowLengths[0] + ", " + rowLengths[1]);
+        boolean success = false;
         int combo = 1;
-        if(rowLengths[0] >= 3 || rowLengths[1] >= 3){ //successful swap to check // 0 horizontal // 1 vertical
+        if(rowLengths[0] < 3 && rowLengths[1] < 3) { //successful swap to check // 0 horizontal // 1 vertical
+            rowLengths = checkRow(x,y,candyBoard);
+        }
+
+        if(rowLengths[0] >= 3 || rowLengths[1] >= 3){
             //successful swap.
             System.out.println("Successful Candy Swap: updating sprite positions...");
             setCandyXY(initial, newX, newY);

@@ -30,6 +30,8 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
     int destX;
     int destY;
 
+    boolean canSwap = false;
+
     CandyTable candyTable;
 
     BoardView(Context context) {
@@ -45,7 +47,6 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void onDraw(Canvas canvas) {
         //Called when drawing shit.
-        System.out.println("onDraw()");
         canvas.drawColor(Color.WHITE);
 
         int width = getWidth();
@@ -118,9 +119,10 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
             prevX = (int) event.getX() / colWidth; //X that was touched
             prevY = (int) event.getY() / colHeight; // Y that was touched
             candyTable.candyBoard.get(prevX).get(prevY).debugTap();
+            canSwap = true;
         }
 
-        else if (event.getAction() == MotionEvent.ACTION_UP) { //liftup
+        else if (event.getAction() == MotionEvent.ACTION_MOVE && canSwap) { //dragging.
             System.out.println("Touch up detected");
             //swapping candy
             destX = (int) event.getX() / colWidth;
@@ -134,30 +136,16 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
             if(Math.abs(dX) > 1 || Math.abs(dY) > 1 || (dX == 0 && dY == 0) ||
                     (dX != 0 && dY != 0)) {
                 System.out.println("Cannot swap: " + dX + ", " + dY);
-                return false;
+                return true;
             }
 
             candyTable.inputSwap( prevX,prevY,destX,destY);
-            // check if candy match
-
-            // if candies dont match
-
-            /*
-
-            if ("candies match function") {
-
-                candyTable.generateNewCandy();
-                candyTable.shiftCandyColumn();
-                candyTable.addScore();
-                candyTable.setScore();
-            }
-            */
-
-            }
-
-            return true;
-
+            canSwap = false;
         }
+        invalidate();
+        return true;
+
+    }
 
   /*  private void swapGrids(int startRow, int startCol, int endRow, int endCol) {
         int src_index = startRow * 2 + startCol;
