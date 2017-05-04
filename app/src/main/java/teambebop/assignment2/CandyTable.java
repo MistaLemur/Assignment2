@@ -195,7 +195,7 @@ public class CandyTable {
         ArrayList<Candy> column = candyBoard.get(x);
         for(int i = y; y < sizeY - 1; y++){
             Candy candy = column.get(i+1);
-            setCandyXY(candy, x, y);
+            setCandyXY(candy, x, i);
             column.set(i, candy);
         }
         column.set(sizeY - 1, null); //for the time being, put a null into the topmost position.
