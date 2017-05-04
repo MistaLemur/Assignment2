@@ -140,11 +140,15 @@ else if (touchup){
             if (prevY == destY && prevX == destX){
                 System.out.println("Didn't move the candy");}
 
-            if ("candies match") {
+            if ("candies match function") {
 
                 CandyTable.generateNewCandy();
                 CandyTable.shiftCandyColumn();
+                CandyTable.addScore();
+                CandyTable.setScore();
             }
+
+
             }
 
         }
