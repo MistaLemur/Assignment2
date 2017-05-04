@@ -83,7 +83,9 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
         System.out.println("SurfaceCreated()");
         //icon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
         if(candyTable == null) {
+            System.out.println("Generating new candytable");
             candyTable = new CandyTable(9, 9, thisContext);
+
         }
     }
 
@@ -104,47 +106,41 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public boolean onTouchEvent(MotionEvent event) { // unchanged  DO swapping
         //Event listening
-        //System.out.println("Touch event function");
-/*ontouchevent
-if (touchdown){
- * code to do nothing
-}
-else if (touchup){
-*  swapps candies
-* check if candy matches with the other candies
-* if not, swaps back
-*
-}*/
+        int action = event.getAction() & event.ACTION_MASK;
 
-      //  int action = event.getAction() & event.ACTION_MASK;
-
-        //System.out.println("touch event: " + action);
+        int width = getWidth();
+        int height = getHeight();
+        int colWidth = getWidth() / candyTable.sizeX;
+        int colHeight = getHeight() / candyTable.sizeY;
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) { //touchdown
             System.out.println("Touch down detected");
-            prevX = (int) event.getX(); //X that was touched
-            prevY = (int) event.getY(); // Y that was touched
-
-
-
+            prevX = (int) event.getX() / colWidth; //X that was touched
+            prevY = (int) event.getY() / colHeight; // Y that was touched
+            candyTable.candyBoard.get(prevX).get(prevY).debugTap();
         }
 
         else if (event.getAction() == MotionEvent.ACTION_UP) { //liftup
             System.out.println("Touch up detected");
             //swapping candy
-            destX = (int) event.getX();
-            destY = (int) event.getY();
+            destX = (int) event.getX() / colWidth;
+            destY = (int) event.getY() / colHeight;
+
+            //deltas for x and y
+            int dX = destX - prevX;
+            int dY = destY - prevY;
+
+            //If you're trying to swap nonadjacent candies... return
+            if(Math.abs(dX) > 1 || Math.abs(dY) > 1 || (dX == 0 && dY == 0) ||
+                    (dX != 0 && dY != 0)) {
+                System.out.println("Cannot swap: " + dX + ", " + dY);
+                return false;
+            }
 
             candyTable.inputSwap( prevX,prevY,destX,destY);
             // check if candy match
 
-            if (prevY == destY && prevX == destX){
-                System.out.println("Didn't move the candy");}
-
-
             // if candies dont match
-
-
 
             /*
 
@@ -157,10 +153,9 @@ else if (touchup){
             }
             */
 
-
             }
 
-            return false;
+            return true;
 
         }
 

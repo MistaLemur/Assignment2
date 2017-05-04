@@ -104,6 +104,8 @@ public class CandyTable {
         if(newX < 0 || newX >= sizeX) return;
         if(newY < 0 || newY >= sizeY) return;
 
+        System.out.println("Attempting swap");
+
         //swap the pieces here
         Candy initial = candyBoard.get(x).get(y); // initial position
         Candy swapped = candyBoard.get(newX).get(newY); // destination position
@@ -111,12 +113,15 @@ public class CandyTable {
         candyBoard.get(newX).set(newY, initial); // swapping the other
 
         int[] rowLengths = checkRow(newX, newY, candyBoard); // chcking the rows
+        System.out.println("Found rows: " + rowLengths[0] + ", " + rowLengths[1]);
         int combo = 1;
         if(rowLengths[0] >= 3 || rowLengths[1] >= 3){ //successful swap to check // 0 horizontal // 1 vertical
             //successful swap.
+            System.out.println("Successful Candy Swap: updating sprite positions...");
             setCandyXY(initial, newX, newY);
             setCandyXY(swapped, x, y);
-            
+
+
             //Find all candies in the rows to pop
             //popCandies(x, y, combo);
 
@@ -212,20 +217,20 @@ public class CandyTable {
          It checks for both vertical and horizontal rows.
          It's return format is: {vertical row length, horizontal row length}
          */
-        int vertical = 0;
-        int horizontal = 0;
+        int vertical = 1;
+        int horizontal = 1;
 
         if(x > -1 && x < sizeX && y > -1 && y < sizeY) {
             Candy initial = board.get(x).get(y);
             //north
-            vertical += checkRowRecursive(x, y, 0, 1, 1, initial, board);
+            vertical += checkRowRecursive(x, y+1, 0, 1, 0, initial, board);
             //south
-            vertical += checkRowRecursive(x, y, 0, -1, 1, initial, board);
+            vertical += checkRowRecursive(x, y-1, 0, -1, 0, initial, board);
 
             //east
-            horizontal += checkRowRecursive(x, y, 1, 0, 1, initial, board);
+            horizontal += checkRowRecursive(x+1, y, 1, 0, 0, initial, board);
             //west
-            horizontal += checkRowRecursive(x, y, -1, 0, 1, initial, board);
+            horizontal += checkRowRecursive(x-1, y, -1, 0, 0, initial, board);
         }
 
         int[] rows = new int[]{vertical, horizontal};
@@ -239,7 +244,7 @@ public class CandyTable {
         if(y < 0 || y >= sizeY) return depth;
 
         Candy current = board.get(x).get(y);
-        if(current.equals(initialCandy)){
+        if(current.type == initialCandy.type){
             return checkRowRecursive(x + dx, y + dy, dx, dy, depth+1, initialCandy, board);
         }else{
             return depth;
