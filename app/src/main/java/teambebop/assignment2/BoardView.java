@@ -134,22 +134,27 @@ else if (touchup){
             //swapping candy
             destX = (int) event.getX();
             destY = (int) event.getY();
-            CandyTable.inputSwap( prevX,prevY,destX,destY);
+
+            candyTable.inputSwap( prevX,prevY,destX,destY);
             // check if candy match
 
             if (prevY == destY && prevX == destX){
                 System.out.println("Didn't move the candy");}
+            /*
 
             if ("candies match function") {
 
-                CandyTable.generateNewCandy();
-                CandyTable.shiftCandyColumn();
-                CandyTable.addScore();
-                CandyTable.setScore();
+                candyTable.generateNewCandy();
+                candyTable.shiftCandyColumn();
+                candyTable.addScore();
+                candyTable.setScore();
             }
+            */
 
 
             }
+
+            return false;
 
         }
 

@@ -85,7 +85,7 @@ public class CandyTable {
         }
     }
 
-    public void inputSwap(int x, int y, int dx, int dy){
+    public void inputSwap(int x, int y, int newX, int newY){
         //This function attempts to swap the candy at x,y in the given direction
         /*
          * dx and dy are just delta variables that indicate the swapping direction
@@ -97,9 +97,6 @@ public class CandyTable {
          * 4. Otherwise, undo the swapping operation.
          * 5. Apply any animations if necessary.
          */
-
-        int newX = x + dx;
-        int newY = y + dy;
 
         //bounds checking for swapping parameters
         if(x < 0 || x >= sizeX) return;
@@ -117,11 +114,9 @@ public class CandyTable {
         int combo = 1;
         if(rowLengths[0] >= 3 || rowLengths[1] >= 3){ //successful swap to check // 0 horizontal // 1 vertical
             //successful swap.
-            initial.x = newX;
-            initial.y = newY;
-            swapped.x = x;
-            swapped.y = y;
-
+            setCandyXY(initial, newX, newY);
+            setCandyXY(swapped, x, y);
+            
             //Find all candies in the rows to pop
             //popCandies(x, y, combo);
 
