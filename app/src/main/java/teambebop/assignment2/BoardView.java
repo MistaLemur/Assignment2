@@ -27,6 +27,8 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
     int prevY;
     int startRowNum;
     int startColNum;
+    int destX;
+    int destY;
 
     CandyTable candyTable;
 
@@ -103,75 +105,46 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
     public boolean onTouchEvent(MotionEvent event) { // unchanged  DO swapping
         //Event listening
         //System.out.println("Touch event function");
+/*ontouchevent
+if (touchdown){
+ * code to do nothing
+}
+else if (touchup){
+*  swapps candies
+* check if candy matches with the other candies
+* if not, swaps back
+*
+}*/
 
-        int currX; // currentX coor
-        int currY;  // current Y coor
-        int endRowNum = 0;
-        int endColNum = 0;
-        int width = getWidth();
-        int height = getHeight();
-
-        int columnWidth = width / 9;
-        int rowHeight = height / 9;
-
-        int action = event.getAction() & event.ACTION_MASK;
+      //  int action = event.getAction() & event.ACTION_MASK;
 
         //System.out.println("touch event: " + action);
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) { //touchdown
-            Rect rect = new Rect();
+            System.out.println("Touch down detected");
+            prevX = (int) event.getX(); //X that was touched
+            prevY = (int) event.getY(); // Y that was touched
 
-            prevX = (int) event.getX();
-            prevY = (int) event.getY();
 
-            startRowNum = prevY / rowHeight;
-            startColNum = prevX / columnWidth;
 
-            Candy candy = candyTable.candyBoard.get(startColNum).get(startRowNum);
-            candy.debugTap();
         }
 
         else if (event.getAction() == MotionEvent.ACTION_UP) { //liftup
-            currX = (int) event.getX();
-            currY = (int) event.getY();
+            System.out.println("Touch up detected");
+            //swapping candy
+            destX = (int) event.getX();
+            destY = (int) event.getY();
+            CandyTable.inputSwap( prevX,prevY,destX,destY);
 
-            endRowNum = currY / rowHeight;
-            endColNum = currX / columnWidth;
+            if (prevY == destY && prevX == destX){
+                System.out.println("Didn't move the candy");}
+            if (){
 
-            System.out.println("StartRowNum : " + startRowNum + " StartColNum: " + startColNum);
-            System.out.println("EndRowNum: " + endRowNum + " EndColNum: " + endColNum);
-
-            // continue 4301134
-            if(startRowNum == endRowNum){
-                if(startColNum >endColNum){
-                    System.out.println("R to L"):
-                    swapGrids(startRowNum, startColNum, endRowNum, )
-                }
-                else if(startColNum <endColNum){
-                    System.out.println("L to R"):
-                }else{
-                    System.out.println("Action unspecified");
-                }
-            else if (startColNum == endColNum){
-                    if(startColNum >endRowNum){
-                        System.out.println("Bottom to Top"):
-                    }
-                    else if(startColNum <endRowNum){
-                        System.out.println("Top to Bottom"):
-                    }else{
-                        System.out.println("Action unspecified");
-                    }
-                }
-                else{
-                    System.out.println("It doesn't make sense");
-
-                }
             }
 
-        return true;
-    }
+        }
 
-    private void swapGrids(int startRow, int startCol, int endRow, int endCol) {
+  /*  private void swapGrids(int startRow, int startCol, int endRow, int endCol) {
         int src_index = startRow * 2 + startCol;
         int dest_index = endRow * 2 + endCol;
 
@@ -181,6 +154,6 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
         indices.set(src_index, destVal);
         indices.set(dest_index, srcVal);
     }
-
+*/
 }
 
