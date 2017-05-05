@@ -18,7 +18,7 @@ import java.util.List;
  * Created by d4rk3_000 on 4/23/2017.
  */
 
-public class BoardView extends SurfaceView implements SurfaceHolder.Callback, Runnable{
+public class BoardView extends SurfaceView implements SurfaceHolder.Callback{
 
     Context thisContext;
 
@@ -55,25 +55,10 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback, Ru
             candyTable.updateScreenDims(width, height);
             candyTable.drawToCanvas(canvas);
         }
-        /*
-        //deprecated example code from discussion
-       // Drawing the whole screen. until we get one screen into another
-        Rect rect = new Rect();
 
-        int width = getWidth();
-        int height = getHeight();
-
-        int rowHeight = height / 9;//3
-        int columnWidth = width / 9;//2
-
-        for(int i = 0; i < 9; ++i) { //3
-            for(int j = 0; j < 9; ++j) { //2
-                rect.set(j * columnWidth, i * rowHeight, (j + 1) * columnWidth, (i + 1) * rowHeight);
-                canvas.drawBitmap(icons[indices.get(i * 2 + j)], null, rect, null);
-            }
-        }
-        */
-
+        gameLogic();
+        //I'm putting gameLogic() here because I can't figure out how else to get access to the thread
+        //that creates the boardview; Trying to force an onDraw() by calling invalidate() from a different thread does not work. :(
     }
 
 
@@ -143,7 +128,7 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback, Ru
 
         runAnimations();
         // When check for combos match
-        checkingforcombos();
+        //checkingforcombos();
 
         invalidate();
         return true;
@@ -171,18 +156,12 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback, Ru
 
     }
 
-    @Override
-    public void run(){
-        while(true){
-            runAnimations();
-            //invalidate(); I have no idea how to access this thing from this other thread. :(
+    public void gameLogic(){
 
-            try {
-                Thread.sleep(16);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        runAnimations();
+
+
+        invalidate();
     }
 
     public void checkingforcombos(int x, int y, Candy candyList ){
@@ -199,11 +178,9 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback, Ru
 
         // Check every candy after first one matches.
 
-        int combo[] = candyTable.checkRow(x, y, board); // gives number of combos there is
-        if (combo > 3){
-            candyTable.popcandies(x,y,combo);
-
-
+        int combo[] = candyTable.checkRow(x, y, candyTable.candyBoard); // gives number of combos there is
+        if (combo[1] > 3){
+            candyTable.popCandies(x,y,combo[1]);
         }
 
 
