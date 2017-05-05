@@ -29,7 +29,7 @@ public class CandyTable {
 
     Context appContext; // get drawing of bitmaps
 
-    int animLength = 10;
+    int animLength = 20;
 
 
     public ArrayList<Candy> candyList = new ArrayList<Candy>();

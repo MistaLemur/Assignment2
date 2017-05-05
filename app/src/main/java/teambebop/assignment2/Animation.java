@@ -82,7 +82,7 @@ public class Animation {
     public double quadFailedSwap(double time){
         //This is the animation for a failed swap.
         //It's a quadratic easing curve centered about 0.5.
-        return 1 - (time - 0.5) * (time - 0.5);
+        return 1 - (2 * time - 1) * (2 * time - 1);
     }
 
     public double tween(double time){
