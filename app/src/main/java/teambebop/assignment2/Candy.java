@@ -24,6 +24,8 @@ public class Candy {
 
     int x,y;
 
+    Animation anim;
+
 
     public static Bitmap icons[]; //global variable in the class
     public static int numTypes = 4;
@@ -69,8 +71,12 @@ public class Candy {
         }
     }
 
-    public void flush(){ // only called when deleted candy. empty for now
-
+    public void flush(){ // only called when deleting candy
+        if(anim != null){
+            iconRect = anim.fin;
+            anim.candy = null;
+            anim = null;
+        }
     }
 
     public void drawToCanvas(Canvas canvas){ //draw candy to canvas
@@ -83,7 +89,15 @@ public class Candy {
         System.out.println(iconRect.flattenToString());
     }
 
+    public void setAnimation(Animation newAnim){
+        //This is a simple setter function for animations
+        anim = newAnim;
+        anim.candy = this;
+    }
 
-
-
+    public void newAnimation(Rect start, Rect finish, int numFrames){
+        //This will create a new animation with the given parameters and set it for this candy.
+        //If the candy already has an animation, it will get removed.
+        new Animation(this, start, finish, numFrames);
+    }
 }

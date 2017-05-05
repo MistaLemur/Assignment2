@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.MotionEvent;
+import java.lang.Thread;
 
 import java.util.List;
 
@@ -20,19 +21,16 @@ import java.util.List;
 public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
 
     Context thisContext;
-    Bitmap icons[];
 
-    List<Integer> indices;
     int prevX;
     int prevY;
-    int startRowNum;
-    int startColNum;
     int destX;
     int destY;
 
     boolean canSwap = false;
 
-    CandyTable candyTable;
+    public static CandyTable candyTable;
+    public static boolean hasAnimation = false;
 
     BoardView(Context context) {
         //Constructor for the surface
@@ -85,8 +83,7 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
         //icon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
         if(candyTable == null) {
             System.out.println("Generating new candytable");
-            candyTable = new CandyTable(9, 9, thisContext);
-
+            candyTable = new CandyTable(9, 9, getWidth(), getHeight(), thisContext);
         }
     }
 
@@ -114,16 +111,15 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
         int colWidth = getWidth() / candyTable.sizeX;
         int colHeight = getHeight() / candyTable.sizeY;
 
-        if (event.getAction() == MotionEvent.ACTION_DOWN) { //touchdown
-            System.out.println("Touch down detected");
+        if (event.getAction() == MotionEvent.ACTION_DOWN && !hasAnimation) { //touchdown
             prevX = (int) event.getX() / colWidth; //X that was touched
             prevY = (int) event.getY() / colHeight; // Y that was touched
             candyTable.candyBoard.get(prevX).get(prevY).debugTap();
             canSwap = true;
+            //System.out.println("Touch down detected: " + prevX + ", "+ prevY);
         }
 
-        else if (event.getAction() == MotionEvent.ACTION_MOVE && canSwap) { //dragging.
-            System.out.println("Touch up detected");
+        else if (event.getAction() == MotionEvent.ACTION_MOVE && canSwap && !hasAnimation) { //dragging.
             //swapping candy
             destX = (int) event.getX() / colWidth;
             destY = (int) event.getY() / colHeight;
@@ -132,31 +128,44 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
             int dX = destX - prevX;
             int dY = destY - prevY;
 
+            //System.out.println("Touch up detected: " + destX + ", " + destY);
             //If you're trying to swap nonadjacent candies... return
             if(Math.abs(dX) > 1 || Math.abs(dY) > 1 || (dX == 0 && dY == 0) ||
                     (dX != 0 && dY != 0)) {
-                System.out.println("Cannot swap: " + dX + ", " + dY);
+                //System.out.println("Cannot swap: " + dX + ", " + dY);
                 return true;
             }
 
             candyTable.inputSwap( prevX,prevY,destX,destY);
             canSwap = false;
         }
+
+        runAnimations();
+
         invalidate();
         return true;
 
     }
 
-  /*  private void swapGrids(int startRow, int startCol, int endRow, int endCol) {
-        int src_index = startRow * 2 + startCol;
-        int dest_index = endRow * 2 + endCol;
+    public void runAnimations(){
+        hasAnimation = false;
 
-        int srcVal = indices.get(src_index);
-        int destVal = indices.get(dest_index);
+        if(candyTable != null && candyTable.candyList != null && candyTable.candyList.size() > 0) {
 
-        indices.set(src_index, destVal);
-        indices.set(dest_index, srcVal);
+            for (Candy candy : candyTable.candyList) {
+                Animation anim = candy.anim;
+                if (anim == null) continue;
+
+                anim.nextFrame();
+                hasAnimation = true;
+
+                //System.out.println("RUNNING ANIMATION! " + anim.frameCount);
+
+                if (anim.frameCount >= anim.numFrames)
+                    anim.flush();
+            }
+        }
+
     }
-*/
 }
 

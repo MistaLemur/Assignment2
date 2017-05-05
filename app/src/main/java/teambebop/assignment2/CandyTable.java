@@ -29,6 +29,8 @@ public class CandyTable {
 
     Context appContext; // get drawing of bitmaps
 
+    int animLength = 10;
+
 
     public ArrayList<Candy> candyList = new ArrayList<Candy>();
     //This is a 1d arraylist of candy references, just to make stuff easier to iterate through.
@@ -38,17 +40,19 @@ public class CandyTable {
     //To read from this arraylist, do...
     // candyBoard.get(X).get(Y);
 
-
     double score = 0;
 
     public CandyTable(){  //constructor
         generateNewBoard();
     }
 
-    public CandyTable(int x, int y, Context context){ // context from candy create cndy tables of any size
+    public CandyTable(int x, int y, int sWidth, int sHeight, Context context){ // context from candy create cndy tables of any size
 
         sizeX = x;
         sizeY = y;
+        screenWidth = sWidth;
+        screenHeight = sHeight;
+
         appContext = context;
         generateNewBoard();
     }
@@ -67,21 +71,40 @@ public class CandyTable {
 
         candyList.clear(); //there should be nothing that reference to candy
 
-        //now build the new board's arraylists.
+        //now build the new board's arraylists columns first
+        for(int i = 0; i < sizeX; i++) { //# of columns
+            //build the column list
+            ArrayList<Candy> column = new ArrayList<Candy>(sizeY);
+
+            for(int j=0; j < sizeY; j++) { //# of rows
+                column.add(null);
+            }
+
+            candyBoard.add(column); //adding columns to the candy board
+        }
+
+        //now generate the candies
         for(int i = 0; i < sizeX; i++){ //# of columns
             //build the column list
-            ArrayList<Candy> column = new ArrayList<Candy>(9);
+            ArrayList<Candy> column = candyBoard.get(i);
 
             for(int j=0; j < sizeY; j++){ //# of rows
                 //fill in the columns.
                 Candy candy = generateNewCandy(i, j); //new object
                 //do candy initialization shit here.
                 //maybe add animations here too?
+                /*
+                Rect newRect = new Rect(candy.iconRect);
+
+                newRect.top -= candy.iconRect.height() * sizeY;
+                newRect.bottom -= candy.iconRect.height() * sizeY;
+                candy.newAnimation(newRect, candy.iconRect, 60);
+                */
+
                 //Maybe a board should have an initial animation of all of the columns falling.
                 column.add(candy);
             }
 
-            candyBoard.add(column); //adding columns to the candy board
         }
     }
 
@@ -112,6 +135,9 @@ public class CandyTable {
         candyBoard.get(x).set(y, swapped); //initi
         candyBoard.get(newX).set(newY, initial); // swapping the other
 
+        Rect start = new Rect(initial.iconRect);
+        Rect end = new Rect(swapped.iconRect);
+
         int[] rowLengths = checkRow(newX, newY, candyBoard); // chcking the rows
         System.out.println("Found rows: " + rowLengths[0] + ", " + rowLengths[1]);
         boolean success = false;
@@ -123,8 +149,13 @@ public class CandyTable {
         if(rowLengths[0] >= 3 || rowLengths[1] >= 3){
             //successful swap.
             System.out.println("Successful Candy Swap: updating sprite positions...");
+
+
             setCandyXY(initial, newX, newY);
             setCandyXY(swapped, x, y);
+
+            initial.newAnimation(start, initial.iconRect, animLength);
+            swapped.newAnimation(end, swapped.iconRect, animLength);
 
 
             //Find all candies in the rows to pop
@@ -143,6 +174,11 @@ public class CandyTable {
             candyBoard.get(x).set(y, initial); //initi
             candyBoard.get(newX).set(newY, swapped); // swapping the other
             //do an animation for failed swap??
+            initial.newAnimation(start, end, animLength*2);
+            initial.anim.animType = 1;
+
+            swapped.newAnimation(end, start, animLength*2);
+            swapped.anim.animType = 1;
         }
 
     }
@@ -190,13 +226,13 @@ public class CandyTable {
 
             //make new candy at top of column
             Candy newCandy = generateNewCandy(candy.x, 0);
+            setCandyXY(newCandy, candy.x, 0);
 
-            // Assign new candies here
-            setCandyXY( newCandy, x , 0); // (Candy candy, x,y );
+            Rect oldRect = new Rect(newCandy.iconRect);
+            oldRect.top -= newCandy.iconRect.height();
+            oldRect.bottom -= newCandy.iconRect.height();
 
-
-            //shift candies again.
-            shiftCandyColumn(candy.x, candy.y); // when candy falls
+            newCandy.newAnimation(oldRect, newCandy.iconRect, animLength);
 
         }
     }
@@ -207,8 +243,13 @@ public class CandyTable {
         ArrayList<Candy> column = candyBoard.get(x);
         for(int i = y; i > 0; i--){
             Candy candy = column.get(i-1);
+
+            Rect oldRect = new Rect(candy.iconRect);
             setCandyXY(candy, x, i);
+
             column.set(i, candy);
+
+            candy.newAnimation(oldRect, candy.iconRect, animLength);
         }
         column.set(0, null); //for the time being, put a null into the topmost position.
     }
@@ -412,7 +453,7 @@ public class CandyTable {
         setCandyXY(candy, x, y);
         candyList.add(candy);
 
-        /*
+
         do{
             int[] rowLengths = checkRow(x, y, candyBoard);
             if(rowLengths[0] < 3 && rowLengths[1] < 3)
@@ -420,7 +461,7 @@ public class CandyTable {
 
             candy.type = rand.nextInt(Candy.numTypes);
         }while(true);
-        */
+
 
         return candy;
     }
