@@ -106,6 +106,8 @@ public class CandyTable {
             }
 
         }
+
+
     }
 
     public void inputSwap(int x, int y, int newX, int newY){
@@ -156,6 +158,7 @@ public class CandyTable {
 
             initial.newAnimation(start, initial.iconRect, animLength);
             swapped.newAnimation(end, swapped.iconRect, animLength);
+            //newfunction
 
 
             //Find all candies in the rows to pop
@@ -168,6 +171,7 @@ public class CandyTable {
             //popping animation
 
             //regenerate new candies
+            //
 
 
         }else{ //failed swap
@@ -290,7 +294,7 @@ public class CandyTable {
 
         if(x > -1 && x < sizeX && y > -1 && y < sizeY) {
             Candy initial = board.get(x).get(y);
-            //north
+                //north
             vertical += checkRowRecursive(x, y+1, 0, 1, 0, initial, board);
             //south
             vertical += checkRowRecursive(x, y-1, 0, -1, 0, initial, board);

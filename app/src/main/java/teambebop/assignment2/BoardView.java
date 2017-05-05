@@ -142,6 +142,8 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback, Ru
         }
 
         runAnimations();
+        // When check for combos match
+        checkingforcombos();
 
         invalidate();
         return true;
@@ -181,6 +183,34 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback, Ru
                 e.printStackTrace();
             }
         }
+    }
+
+    public void checkingforcombos(int x, int y, Candy candyList ){
+
+        // needs to check for combos
+        // checks for combos
+
+        // check
+        // if after it matches  is there any other combos?
+
+        // Check every candy after first one matches.
+        // check
+        // if after it matches  is there any other combos?
+
+        // Check every candy after first one matches.
+
+        int combo[] = candyTable.checkRow(x, y, board); // gives number of combos there is
+        if (combo > 3){
+            candyTable.popcandies(x,y,combo);
+
+
+        }
+
+
+
+
+
+
     }
 }
 
