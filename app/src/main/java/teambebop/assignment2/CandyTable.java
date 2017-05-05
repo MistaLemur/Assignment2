@@ -128,7 +128,9 @@ public class CandyTable {
 
 
             //Find all candies in the rows to pop
+            //
             popCandies(x, y, combo);
+            popCandies(newX, newY, combo);
 
 
             //swapping animation
@@ -157,12 +159,24 @@ public class CandyTable {
 
         Candy initial = candyBoard.get(x).get(y); // it saves the initial
         ArrayList<Candy> candiesToPop = new ArrayList<Candy>();
-        getCandiesInRow(x, y,  0,1,  initial, candyBoard, candiesToPop); // you have the board
-        getCandiesInRow(x, y,  0,-1,  initial, candyBoard, candiesToPop);// checks position. saves candy if correct color and it continues the rest of the row or column
-        getCandiesInRow(x, y,  1,0,  initial, candyBoard, candiesToPop);// calls it four times for each direction
-        getCandiesInRow(x, y,  -1,0,  initial, candyBoard, candiesToPop);
 
-        double points = candiesToPop.size() * candiesToPop.size() * combo * combo / 4.0d;
+        int left = 0, right = 0, up = 0, down = 0;
+        left = checkRowRecursive( x-1, y,   -1, 0,   0, initial, candyBoard);
+        right = checkRowRecursive(x+1, y,   1, 0,   0, initial, candyBoard);
+        up = checkRowRecursive(   x, y-1,   0, -1,   0, initial, candyBoard);
+        down = checkRowRecursive( x, y+1,   0, 1,   0, initial, candyBoard);
+
+        if(left + right + 1 >= 3){
+            getCandiesInRow(x, y,  1,0,  initial, candyBoard, candiesToPop);
+            getCandiesInRow(x, y,  -1,0,  initial, candyBoard, candiesToPop);
+        }
+        if(up + down + 1 >= 3){
+            getCandiesInRow(x, y,  0,1,  initial, candyBoard, candiesToPop);
+            getCandiesInRow(x, y,  0,-1,  initial, candyBoard, candiesToPop);
+
+        }
+
+        double points = candiesToPop.size() * combo * 100;
         //points awarded for popping candies is nonlinear.
         //This is to promote strategic play to set up big combos!
         addScore(points);
@@ -172,15 +186,13 @@ public class CandyTable {
             removeCandy(candy);
 
             //shift candies
-            //shiftCandyColumn(candy.x, candy.y); // when candy falls
+            shiftCandyColumn(candy.x, candy.y); // when candy falls
 
             //make new candy at top of column
-            Candy newCandy = generateNewCandy(candy.x, sizeY-1);
-
-
+            Candy newCandy = generateNewCandy(candy.x, 0);
 
             // Assign new candies here
-            setCandyXY( newCandy,x , y); // (Candy candy, x,y );
+            setCandyXY( newCandy, x , 0); // (Candy candy, x,y );
 
 
             //shift candies again.
@@ -193,18 +205,19 @@ public class CandyTable {
         //This is for shifting candies after a row has been cleared at position x,y.
         //This means x,y is now empty, and everything above y must now be moved downwards.
         ArrayList<Candy> column = candyBoard.get(x);
-        for(int i = y; y < sizeY - 1; y++){
-            Candy candy = column.get(i+1);
+        for(int i = y; i > 0; i--){
+            Candy candy = column.get(i-1);
             setCandyXY(candy, x, i);
             column.set(i, candy);
         }
-        column.set(sizeY - 1, null); //for the time being, put a null into the topmost position.
+        column.set(0, null); //for the time being, put a null into the topmost position.
     }
 
     public void removeCandy(Candy candy){
         candy.flush();
         candyList.remove(candy);
-        candyBoard.get(candy.x).set(candy.y, null);
+        if(candyBoard.get(candy.x).get(candy.y) == candy)
+            candyBoard.get(candy.x).set(candy.y, null);
     }
 
     public void getCandiesInRow(int x, int y, int dx, int dy, Candy initial, //not finished
@@ -215,9 +228,9 @@ public class CandyTable {
         if (y < 0 || y >= sizeY) return;
 
         Candy current = board.get(x).get(y);
-        if (current.equals(initial)) {
+        if (current.type == initial.type) {
             if(!candies.contains(current)) candies.add(current);
-            return;
+            getCandiesInRow(x+dx, y+dy,  dx, dy,  initial,  board, candies);
         } else {
             return;
 
@@ -406,6 +419,7 @@ public class CandyTable {
         It's necessary that candies have a separate drawing rect and touching rect, because
         the touch box might be of a different aspect ratio from the drawing box.
          */
+        if(candy == null) return;
 
         //create two new rects here!
         //one is for the sprites
