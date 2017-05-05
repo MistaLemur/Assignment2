@@ -7,10 +7,11 @@ import android.view.SurfaceView;
 
 public class MainActivity extends Activity {
 
+    BoardView bView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        BoardView bView = new BoardView(this);
+        bView = new BoardView(this);
         setContentView(bView);
 
     }
@@ -18,6 +19,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume(){
         super.onResume();
+        //bView.run();
     }
 
     @Override

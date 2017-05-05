@@ -38,6 +38,10 @@ public class Animation {
     }
 
     public void nextFrame(){
+        if(candy == null) {
+            flush();
+            return;
+        }
         candy.iconRect = getFrame(++frameCount);
     }
 
@@ -56,7 +60,7 @@ public class Animation {
 
     public Rect getFrame(int frameNum){
         //This will get the tweened rectangle that corresponds to the current frame
-        double u = tween((frameNum+1.0d)/numFrames);
+        double u = tween((double)(frameNum)/numFrames);
         double v = 1 - u;
 
         Rect newRect = new Rect();

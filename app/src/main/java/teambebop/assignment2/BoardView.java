@@ -18,7 +18,7 @@ import java.util.List;
  * Created by d4rk3_000 on 4/23/2017.
  */
 
-public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
+public class BoardView extends SurfaceView implements SurfaceHolder.Callback, Runnable{
 
     Context thisContext;
 
@@ -45,6 +45,7 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public void onDraw(Canvas canvas) {
         //Called when drawing shit.
+        System.out.println("DRAW");
         canvas.drawColor(Color.WHITE);
 
         int width = getWidth();
@@ -166,6 +167,20 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback {
             }
         }
 
+    }
+
+    @Override
+    public void run(){
+        while(true){
+            runAnimations();
+            //invalidate(); I have no idea how to access this thing from this other thread. :(
+
+            try {
+                Thread.sleep(16);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
 
