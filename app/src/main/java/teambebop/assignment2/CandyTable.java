@@ -268,6 +268,8 @@ public class CandyTable {
         if(y < 0 || y >= sizeY) return depth;
 
         Candy current = board.get(x).get(y);
+        if(current == null) return depth;
+
         if(current.type == initialCandy.type){
             return checkRowRecursive(x + dx, y + dy, dx, dy, depth+1, initialCandy, board);
         }else{
@@ -406,6 +408,17 @@ public class CandyTable {
         //Generate a random new candy, with array position x and y.
         setCandyXY(candy, x, y);
         candyList.add(candy);
+
+        /*
+        do{
+            int[] rowLengths = checkRow(x, y, candyBoard);
+            if(rowLengths[0] < 3 && rowLengths[1] < 3)
+                break;
+
+            candy.type = rand.nextInt(Candy.numTypes);
+        }while(true);
+        */
+
         return candy;
     }
 
