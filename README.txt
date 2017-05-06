@@ -24,4 +24,4 @@ How to play game:
 4.
 
 How to finish the game:
-1. Go over 1,000,000 points or it finishes if no possible moves. (Figure 1 & 2)
+1. Go over 1,000,000 points or it finishes if no possible moves. (Figure1 & 2)
