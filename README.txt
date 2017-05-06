@@ -6,7 +6,7 @@ How to run this app:
 1. Clone or download from github.
     a. This will include all necessary files to run the program.
 2. Open folder in Android Studio
-3. Click the "Run 'app'" button to install, open, and play the app in an emulator or android device
+3.  Click the "Run 'app'" button to install, open, and play the app in an emulator or android device
 
 
 
