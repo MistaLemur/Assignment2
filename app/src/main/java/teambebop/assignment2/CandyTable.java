@@ -36,6 +36,9 @@ public class CandyTable {
     public ArrayList<Candy> candyList = new ArrayList<Candy>();
     //This is a 1d arraylist of candy references, just to make stuff easier to iterate through.
 
+    public ArrayList<CandyPop> candyPopList = new ArrayList<CandyPop>();
+    //This is a 1d arraylist of candypop effect references.
+
     public ArrayList<ArrayList<Candy>> candyBoard = new ArrayList<ArrayList<Candy>>(); // list of array list. in columns.
     //The candyBoard is an arraylist of arraylists, kind of like a 2d array.
     //To read from this arraylist, do...
@@ -214,6 +217,10 @@ public class CandyTable {
         //This is to promote strategic play to set up big combos!
         addScore(points);
 
+        for(Candy candy:candiesToPop){
+            //add effects here. Thsi is added here because of an order of operations problem with this and column shifting.
+            candyPopList.add( new CandyPop(candy, animLength/2, appContext));
+        }
         for(Candy candy:candiesToPop){
             //kill the candy here.
             removeCandy(candy);
@@ -562,6 +569,9 @@ public class CandyTable {
         }
 
         //Draw any candy particles here
+        for(CandyPop pop:candyPopList){
+            pop.drawToCanvas(canvas);
+        }
 
 
         //Draw the score

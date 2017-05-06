@@ -13,13 +13,17 @@ import android.graphics.Canvas;
 
 public class Candy {
 
-    String color;
     Rect iconRect; // inside the rect drawing candy
     Rect touchRect; // the big square
 
     int type = -1;
     /*
-    type is just an int that corresponds to the sprite. for color
+    type is just an int that corresponds to the sprite bitmap. The values represent the following
+    1. blue
+    2. red
+    3. yellow
+    4. purple
+    5. orange
     */
 
     int x,y;
@@ -41,8 +45,7 @@ public class Candy {
 
     }
 
-    public Candy(String _color, Rect _rect1, Rect _rect2, int idType, Context _context){
-        this.color = _color;
+    public Candy(Rect _rect1, Rect _rect2, int idType, Context _context){
         this.iconRect = _rect1;
         this.touchRect = _rect2;
 

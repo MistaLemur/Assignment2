@@ -21,6 +21,12 @@ public class Animation {
     //0 for linear interpolation.
     //1 for quadratic failed swapping (forward and then back)
 
+    /*
+        I DON'T DO ANY DELTA TIMING IN THIS CLASS.
+        This is just because I don't know how to implement delta-timing.
+        So the animation is just based on frame counts.
+     */
+
 
     public Animation(Candy newCandy, Rect start, Rect finish, int frames){
         candy = newCandy;

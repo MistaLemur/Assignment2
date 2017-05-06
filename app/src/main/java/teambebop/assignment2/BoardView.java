@@ -163,20 +163,36 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback{
     public void runAnimations(){
         hasAnimation = false;
 
-        if(candyTable != null && candyTable.candyList != null && candyTable.candyList.size() > 0) {
+        if(candyTable != null){
+            if(candyTable.candyList != null && candyTable.candyList.size() > 0) {
 
-            for (Candy candy : candyTable.candyList) {
-                Animation anim = candy.anim;
-                if (anim == null) continue;
+                for (Candy candy : candyTable.candyList) {
+                    Animation anim = candy.anim;
+                    if (anim == null) continue;
 
-                anim.nextFrame();
+                    anim.nextFrame();
 
-                //System.out.println("RUNNING ANIMATION! " + anim.frameCount);
+                    //System.out.println("RUNNING ANIMATION! " + anim.frameCount);
 
-                if (anim.frameCount >= anim.numFrames)
-                    anim.flush();
-                else hasAnimation = true;
+                    if (anim.frameCount >= anim.numFrames)
+                        anim.flush();
+                    else hasAnimation = true;
+                }
             }
+
+            if(candyTable.candyPopList != null && candyTable.candyPopList.size() > 0){
+                for(int i = 0; i < candyTable.candyPopList.size(); i++){
+                    CandyPop pop = candyTable.candyPopList.get(i);
+                    if(pop == null) continue;
+
+                    pop.nextFrame();
+                    if(pop.frameCount > pop.animLength){
+                        candyTable.candyPopList.remove(pop);
+                        i--;
+                    } else hasAnimation = true;
+                }
+            }
+
         }
 
     }
