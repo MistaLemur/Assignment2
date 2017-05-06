@@ -246,7 +246,7 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback{
         for(int x =0; x< candyTable.sizeX; x++) {
             for (int y =0; y < candyTable.sizeY;y++) {
 
-
+                int something[] = candyTable.checkRow(xx, yy, candyTable.candyBoard);
                 if (something[0] >= 3) {
                     shouldCheckCombos = true;
                     candyTable.popCandies(x, y, something[2]);
