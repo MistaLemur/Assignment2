@@ -28,7 +28,7 @@ public class Candy {
 
 
     public static Bitmap icons[]; //global variable in the class
-    public static int numTypes = 4;
+    public static int numTypes = 5;
 
 
     public Candy(){ //constructors
@@ -63,11 +63,12 @@ public class Candy {
     public static void loadSprites(Context _context){
         //This function initializes the array of possible candy icons.
         if(icons == null) {
-            icons = new Bitmap[4];
-            icons[0] = BitmapFactory.decodeResource(_context.getApplicationContext().getResources(), R.mipmap.bean_blue);
-            icons[1] = BitmapFactory.decodeResource(_context.getApplicationContext().getResources(), R.mipmap.bean_orange);
-            icons[2] = BitmapFactory.decodeResource(_context.getApplicationContext().getResources(), R.mipmap.bean_yellow);
-            icons[3] = BitmapFactory.decodeResource(_context.getApplicationContext().getResources(), R.mipmap.bean_purple);
+            icons = new Bitmap[5];
+            icons[0] = BitmapFactory.decodeResource(_context.getApplicationContext().getResources(), R.drawable.jelly_teal);
+            icons[1] = BitmapFactory.decodeResource(_context.getApplicationContext().getResources(), R.drawable.swirl_red);
+            icons[2] = BitmapFactory.decodeResource(_context.getApplicationContext().getResources(), R.drawable.bean_yellow);
+            icons[3] = BitmapFactory.decodeResource(_context.getApplicationContext().getResources(), R.drawable.mm_purple);
+            icons[4] = BitmapFactory.decodeResource(_context.getApplicationContext().getResources(), R.drawable.candycorn);
         }
     }
 

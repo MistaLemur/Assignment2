@@ -79,6 +79,13 @@ public class Animation {
         return time;
     }
 
+    public double quadOut(double time){
+        return 1 - (time - 1)*(time - 1);
+    }
+    public double quadIn(double time){
+        return time*time;
+    }
+
     public double quadFailedSwap(double time){
         //This is the animation for a failed swap.
         //It's a quadratic easing curve centered about 0.5.
@@ -87,7 +94,11 @@ public class Animation {
 
     public double tween(double time){
         //This function simply switch()'s the animation type with the tweening function.
+
+        //An enumerator would be helpful here. static const variables can fill in the function I suppose.
         switch(animType){
+            case 3: return quadOut(time);
+            case 2: return quadIn(time);
             case 1: return quadFailedSwap(time);
             default: return lerp(time);
         }

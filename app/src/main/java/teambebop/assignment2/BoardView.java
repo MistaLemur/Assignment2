@@ -27,6 +27,26 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback{
     int destX;
     int destY;
 
+    int combo = 1;
+
+
+    /*
+     For delayed checking of row popping, I have to save the x and y coordinates.
+     This is necessary because I have to wait for animations to complete before executing anything else.
+     */
+    boolean shouldCheckPop = false;
+
+    /*
+     Combo checking for after candies fall.
+     */
+    boolean shouldCheckCombos = false;
+
+    /*
+    For delayed end condition checking, the same is true; I have to have a flag to keep track of if
+    it should check or not whether the game has reached end conditions.
+     */
+    boolean shouldCheckEnd = false;
+
     boolean canSwap = false;
 
     public static CandyTable candyTable;
@@ -45,8 +65,8 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback{
     @Override
     public void onDraw(Canvas canvas) {
         //Called when drawing shit.
-        System.out.println("DRAW");
-        canvas.drawColor(Color.WHITE);
+        //System.out.println("DRAW");
+        canvas.drawColor(Color.argb(255, 32, 32, 32));
 
         int width = getWidth();
         int height = getHeight();
@@ -91,24 +111,31 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback{
     public boolean onTouchEvent(MotionEvent event) { // unchanged  DO swapping
         //Event listening
         int action = event.getAction() & event.ACTION_MASK;
+        System.out.println("TOUCH EVENT: " + action);
 
         int width = getWidth();
         int height = getHeight();
         int colWidth = getWidth() / candyTable.sizeX;
         int colHeight = getHeight() / candyTable.sizeY;
 
-        if (event.getAction() == MotionEvent.ACTION_DOWN && !hasAnimation) { //touchdown
-            prevX = (int) event.getX() / colWidth; //X that was touched
-            prevY = (int) event.getY() / colHeight; // Y that was touched
+        boolean shouldReadInput = !(hasAnimation || shouldCheckPop || shouldCheckCombos || shouldCheckEnd);
+
+        int coords[] = candyTable.screenCoordsToGridCoords((int)event.getX(), (int)event.getY());
+
+        if (event.getAction() == MotionEvent.ACTION_DOWN && shouldReadInput) { //touchdown
+            prevX = coords[0];
+            prevY = coords[1];
+            if(prevX <0 || prevY <0) return true;
             candyTable.candyBoard.get(prevX).get(prevY).debugTap();
             canSwap = true;
             //System.out.println("Touch down detected: " + prevX + ", "+ prevY);
         }
 
-        else if (event.getAction() == MotionEvent.ACTION_MOVE && canSwap && !hasAnimation) { //dragging.
+        else if (event.getAction() == MotionEvent.ACTION_MOVE && canSwap && shouldReadInput) { //dragging.
             //swapping candy
-            destX = (int) event.getX() / colWidth;
-            destY = (int) event.getY() / colHeight;
+            destX = coords[0];
+            destY = coords[1];
+            if(destY <0 || destX <0) return true;
 
             //deltas for x and y
             int dX = destX - prevX;
@@ -122,17 +149,15 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback{
                 return true;
             }
 
-            candyTable.inputSwap( prevX,prevY,destX,destY);
+            shouldCheckPop = candyTable.inputSwap( prevX,prevY,destX,destY);
+            System.out.println("SWAPPED? :" + shouldCheckPop);
             canSwap = false;
+            combo = 1;
+            runAnimations();
+
         }
 
-        runAnimations();
-        // When check for combos match
-        //checkingforcombos();
-
-        invalidate();
         return true;
-
     }
 
     public void runAnimations(){
@@ -145,21 +170,51 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback{
                 if (anim == null) continue;
 
                 anim.nextFrame();
-                hasAnimation = true;
 
                 //System.out.println("RUNNING ANIMATION! " + anim.frameCount);
 
                 if (anim.frameCount >= anim.numFrames)
                     anim.flush();
+                else hasAnimation = true;
             }
         }
 
     }
 
     public void gameLogic(){
+        if(!hasAnimation){
+            // When check for combos match
+            //checkingforcombos();
+
+
+            //Thsi is a crude state machine for game state checking.
+            //Default state for the game is essentially just running animations or awaiting inputs.
+            if(shouldCheckPop){
+
+                System.out.println("SHOULDCHECKPOP: " + prevX + ", "+ prevY);
+                System.out.println("SHOULDCHECKPOP: " + destX + ", "+ destY);
+
+                candyTable.popCandies(prevX, prevY, combo);
+                candyTable.popCandies(destX, destY, combo);
+
+                shouldCheckCombos = true;
+                shouldCheckPop = false;
+
+            }else if(shouldCheckCombos){
+
+
+                shouldCheckCombos = false;
+                shouldCheckEnd = true;
+
+            }else if(shouldCheckEnd){
+
+                shouldCheckEnd = false;
+            }
+        }
+
+
 
         runAnimations();
-
 
         invalidate();
     }

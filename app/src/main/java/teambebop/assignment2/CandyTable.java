@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.ArrayList;
 import android.content.Context;
 import android.graphics.Rect;
+import android.graphics.Paint;
 /**
  * Created by d4rk3_000 on 4/23/2017.
  */
@@ -110,8 +111,9 @@ public class CandyTable {
 
     }
 
-    public void inputSwap(int x, int y, int newX, int newY){
+    public boolean inputSwap(int x, int y, int newX, int newY){
         //This function attempts to swap the candy at x,y in the given direction
+        //Returns true, if success, and false, if failed move.
         /*
          * dx and dy are just delta variables that indicate the swapping direction
          *
@@ -124,10 +126,10 @@ public class CandyTable {
          */
 
         //bounds checking for swapping parameters
-        if(x < 0 || x >= sizeX) return;
-        if(y < 0 || y >= sizeY) return;
-        if(newX < 0 || newX >= sizeX) return;
-        if(newY < 0 || newY >= sizeY) return;
+        if(x < 0 || x >= sizeX) return false;
+        if(y < 0 || y >= sizeY) return false;
+        if(newX < 0 || newX >= sizeX) return false;
+        if(newY < 0 || newY >= sizeY) return false;
 
         System.out.println("Attempting swap");
 
@@ -157,21 +159,10 @@ public class CandyTable {
             setCandyXY(swapped, x, y);
 
             initial.newAnimation(start, initial.iconRect, animLength);
+            initial.anim.animType = 3;
             swapped.newAnimation(end, swapped.iconRect, animLength);
-            //newfunction
-
-
-            //Find all candies in the rows to pop
-            //
-            popCandies(x, y, combo);
-            popCandies(newX, newY, combo);
-
-
-            //swapping animation
-            //popping animation
-
-            //regenerate new candies
-            //
+            swapped.anim.animType = 3;
+            return true;
 
 
         }else{ //failed swap
@@ -183,6 +174,8 @@ public class CandyTable {
 
             swapped.newAnimation(end, start, animLength*2);
             swapped.anim.animType = 1;
+
+            return false;
         }
 
     }
@@ -254,6 +247,7 @@ public class CandyTable {
             column.set(i, candy);
 
             candy.newAnimation(oldRect, candy.iconRect, animLength);
+            candy.anim.animType = 2;
         }
         column.set(0, null); //for the time being, put a null into the topmost position.
     }
@@ -437,13 +431,23 @@ public class CandyTable {
         score = newScore;
     }
 
-    public int[] screenCoordsToGridCoords(double x, double y){ // not needed
-        //This function converts screen percentage coordinates to grid index coordinates.
-        //So the function input, x and y, should both ONLY range from 0.0 to 1.0
+    public int[] screenCoordsToGridCoords(int x, int y){
+        //This function converts screen pixel coordinates to grid index coordinates.
+        //It returns grid index coordinates in the format {x, y}
+        //If the coords are not within the grid, it returns {-1,-1}
+        int coords[] = new int[2];
+        coords[0] = -1;
+        coords[1] = -1;
 
-        int gridX = (int)(x * sizeX);
-        int gridY = (int)(y * sizeY);
-        int[] coords = new int[]{gridX, gridY};
+        for(Candy candy:candyList){
+            if(candy.touchRect != null){
+                if(candy.touchRect.contains(x,y)){
+                    coords[0] = candy.x;
+                    coords[1] = candy.y;
+                    break;
+                }
+            }
+        }
 
         return coords;
     }
@@ -485,6 +489,11 @@ public class CandyTable {
         int colWidth = screenWidth / sizeX;
         int rowHeight = screenHeight / sizeY;
 
+        /*
+        if(colWidth < rowHeight) rowHeight = colWidth;
+        else colWidth = rowHeight;
+        */
+
         //first create touch rect
         Rect touchRect = new Rect();
         touchRect.set(x * colWidth + offX, y * rowHeight + offY,
@@ -496,15 +505,15 @@ public class CandyTable {
         int width = touchRect.width();
         int height = touchRect.height();
 
-        int borderGap = 2;
+        int borderGap = 10;
         int drawWidth = width-borderGap;
         if(height < width) drawWidth = height-borderGap;
         int xOff = (width - drawWidth)/2;
         int yOff = (height - drawWidth)/2;
 
         Rect drawRect = new Rect();
-        drawRect.set(cX - width/2 + xOff + offX, cY - height/2 + yOff + offY,
-                cX - width/2 + xOff + offX + drawWidth, cY - width/2 + yOff + offY + drawWidth);
+        drawRect.set(cX - width/2 + xOff, cY - height/2 + yOff,
+                cX - width/2 + xOff + drawWidth, cY - height/2 + yOff + drawWidth);
 
         candy.touchRect = touchRect;
         candy.iconRect = drawRect;
@@ -522,11 +531,17 @@ public class CandyTable {
         //This updates all of the candies' rects when the screen dimensions change
         boolean changed = false;
 
-        if(screenWidth != newWidth || screenHeight != newHeight) changed = true;
-        screenWidth = newWidth-screenBorder;
-        screenHeight = newHeight-screenBorder;
-        offX = screenBorder/2;
-        offY = screenBorder/2;
+        int nWidth = newWidth, nHeight = newHeight;
+
+        if(newWidth > newHeight) nWidth = newHeight;
+        else nHeight = newWidth;
+
+        if(screenWidth != nWidth || screenHeight != nHeight) changed = true;
+
+        screenWidth = nWidth-screenBorder;
+        screenHeight = nHeight-screenBorder;
+        offX = (newWidth - screenWidth)/2;
+        offY = (newHeight - screenWidth)/2;
 
         if(changed) {
             for (Candy candy : candyList) {
@@ -546,7 +561,21 @@ public class CandyTable {
             candy.drawToCanvas(canvas);
         }
 
+        //Draw any candy particles here
+
+
         //Draw the score
+        float textSize = 75;
+        String scoreText = "Score: " + (int)score;
+        Paint textPaint = new Paint();
+        textPaint.setTextSize(textSize);
+        float textWidth = textPaint.measureText(scoreText) + 10;
+        textPaint.setARGB(128, 0, 0, 0);
+
+        canvas.drawRect(0, 0, (int)textWidth, (int)(textSize*0.9), textPaint);
+
+        textPaint.setARGB(255, 255, 255, 255);
+        canvas.drawText(scoreText, 10, (int)(10 + textSize * 0.65), textPaint);
 
 
         //Draw anything else here?
