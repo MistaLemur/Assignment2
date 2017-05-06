@@ -235,27 +235,20 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback{
         invalidate();
     }
 
-    public void checkingforcombos(int x, int y, Candy candyList ){
+    public void checkingforcombos(int xx, int yy, Candy candyList ){// To Anthony-chan, What should the arguments be?
 
-        // needs to check for combos
-        // checks for combos
+        // check all candies to see if in row
 
-        // check
-        // if after it matches  is there any other combos?
-
-        // Check every candy after first one matches.
-        // check
-        // if after it matches  is there any other combos?
-
-        // Check every candy after first one matches.
-
-        int combo[] = candyTable.checkRow(x, y, candyTable.candyBoard); // gives number of combos there is
-        if (combo[1] > 3){
-            candyTable.popCandies(x,y,combo[1]);
+         // gives number of combos there is
+        for(int x =0; x> 9; x++) {
+            for (int y =0; y > 9;y++) {
+                int combo[] = candyTable.checkRow(x, y, candyTable.candyBoard);
+                if (combo[2] >= 3) {
+                    candyTable.popCandies(x, y, combo[1]);
+                }
+            }
         }
-
-
-
+//for(Candy candy:candyList)
 
 
 
