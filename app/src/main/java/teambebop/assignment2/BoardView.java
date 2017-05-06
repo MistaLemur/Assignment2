@@ -239,7 +239,7 @@ public class BoardView extends SurfaceView implements SurfaceHolder.Callback{
     public void checkingforcombos(int xx, int yy, Candy candyList ){// To Anthony-chan, What should the arguments be?
 
         // check all candies to see if in row
-        int combo[] = candyTable.checkRow(x, y, candyTable.candyBoard);
+        int combo[] = candyTable.checkRow(xx, yy, candyTable.candyBoard);
          // gives number of combos there is
         for(int x =0; x> combo[2]; x++) {
             for (int y =0; y > combo[2];y++) {
