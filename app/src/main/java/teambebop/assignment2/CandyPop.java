@@ -40,7 +40,7 @@ public class CandyPop {
         loadSprites(_context);
 
         type = candy.type;
-        if(type == 4) type = 3; //these share the same explosion animation.
+        if(type == 4) type = 2; //these share the same explosion animation.
         animLength = framesLength;
         iconRect = candy.iconRect;
         frames = allFrames[type];
