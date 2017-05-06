@@ -15,15 +15,4 @@ public class MainActivity extends Activity {
         setContentView(bView);
 
     }
-
-    @Override
-    protected void onResume(){
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause(){
-        super.onPause();
-    }
-
 }

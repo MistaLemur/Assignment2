@@ -45,8 +45,10 @@ public class CandyTable {
     // candyBoard.get(X).get(Y);
 
     double score = 0;
+    double winningScore = 1000000;
+    int gameEnd = 0; //0 for game hasn't ended, -1 for game lost, 1 for game won.
 
-    public CandyTable(){  //constructor
+    public CandyTable(){  //basic constructor
         generateNewBoard();
     }
 
@@ -94,24 +96,12 @@ public class CandyTable {
 
             for(int j=0; j < sizeY; j++){ //# of rows
                 //fill in the columns.
-                Candy candy = generateNewCandy(i, j); //new object
-                //do candy initialization shit here.
-                //maybe add animations here too?
-                /*
-                Rect newRect = new Rect(candy.iconRect);
+                Candy candy = generateNewCandy(i, j); //new object at i,j
 
-                newRect.top -= candy.iconRect.height() * sizeY;
-                newRect.bottom -= candy.iconRect.height() * sizeY;
-                candy.newAnimation(newRect, candy.iconRect, 60);
-                */
-
-                //Maybe a board should have an initial animation of all of the columns falling.
                 column.add(candy);
             }
 
         }
-
-
     }
 
     public boolean inputSwap(int x, int y, int newX, int newY){
@@ -183,15 +173,11 @@ public class CandyTable {
 
     }
 
-    public void popCandies(int x, int y, int combo){
-        //This pops all candies in rows that include the given coordinates.
-        /*
-        This gets all of the candies in the row directions, and then
-        awards points based on how many candies are found.
-        Then it removes all of the candies found and shifts columns as necessary.
-         */
-        if(x < 0 || x >= sizeX) return;
-        if(y < 0 || y >= sizeY) return;
+    public ArrayList<Candy> getCandiesToPop(int x, int y){
+        //this function returns a list of candies that make up the rows and columns of 3
+
+        if(x < 0 || x >= sizeX) return null;
+        if(y < 0 || y >= sizeY) return null;
 
         Candy initial = candyBoard.get(x).get(y); // it saves the initial
         ArrayList<Candy> candiesToPop = new ArrayList<Candy>();
@@ -212,7 +198,15 @@ public class CandyTable {
 
         }
 
-        double points = candiesToPop.size() * combo * 100;
+        return candiesToPop;
+    }
+
+    public void popCandies(ArrayList<Candy> candiesToPop, int combo){
+        /*
+        This function takes an arraylist of candies, and removes all of them from the grid.
+         It also awards points, based on how many candies and the combo number.
+         */
+        double points = candiesToPop.size() * combo * combo * 200;
         //points awarded for popping candies is nonlinear.
         //This is to promote strategic play to set up big combos!
         addScore(points);
@@ -222,6 +216,11 @@ public class CandyTable {
             candyPopList.add( new CandyPop(candy, animLength/2, appContext));
         }
         for(Candy candy:candiesToPop){
+            if(!candyList.contains(candy)){
+                //This candy has already been removed...?
+                continue;
+            }
+
             //kill the candy here.
             removeCandy(candy);
 
@@ -266,7 +265,7 @@ public class CandyTable {
             candyBoard.get(candy.x).set(candy.y, null);
     }
 
-    public void getCandiesInRow(int x, int y, int dx, int dy, Candy initial, //not finished
+    public void getCandiesInRow(int x, int y, int dx, int dy, Candy initial,
             ArrayList<ArrayList<Candy>> board, ArrayList<Candy> candies) {
 
         //This will add any found candies to the given candies list, since objects are passed by reference in java.
@@ -326,10 +325,9 @@ public class CandyTable {
         }
     }
 
-    public int computeRemainingMoves() { // copies table and test every single possible move. to end the game
-        //This function computes and saves possible moves that yields points.
-        //it returns the # of possible moves.
-        //The move class just stores x and y, and a move direction.
+    public boolean hasRemainingMove() {
+        //This function searching for any possible move that can be made.
+        //IF one is found, then returns true. Otherwise, false.
 
         /*
         * ::ALGORITHM::
@@ -337,13 +335,12 @@ public class CandyTable {
         * 2. For each candy in the given list
         *   a) Perform swapping operations of that candy in the cloned table
         *   b) Check if any rows can be created from that swapping operation
-        *   c) If so, then make note of the move performed and save it.
+        *   e) If a successful move was found, then return true
         *   d) undo the swapping operation and move onto the next candy.
         */
 
         ArrayList<ArrayList<Candy>> clone = cloneBoard();
         int[] rowLengths = new int[2];
-        int movesLeft = 0;
         for(int x = 0; x < sizeX; x++){
             for(int y = 0; y < sizeY; y++){
                 //each test swapping operations is
@@ -355,9 +352,9 @@ public class CandyTable {
                 if(y < sizeY-1) {
                     boardSwapCandies(x, y, 0, 1, clone);
                     rowLengths = checkRow(x, y + 1, clone);
-                    if (rowLengths[0] > 0 || rowLengths[1] > 0) {
+                    if (rowLengths[0] >= 3 || rowLengths[1] >= 3) {
                         //successful move
-                        movesLeft++;
+                        return true;
                         //maybe save the move here...
                     }
                     boardSwapCandies(x, y, 0, 1, clone); //undo the swap
@@ -368,9 +365,9 @@ public class CandyTable {
                 if(y > 0) {
                     boardSwapCandies(x, y, 0, -1, clone);
                     rowLengths = checkRow(x, y - 1, clone);
-                    if (rowLengths[0] > 0 || rowLengths[1] > 0) {
+                    if (rowLengths[0] >= 3 || rowLengths[1] >= 3) {
                         //successful move
-                        movesLeft++;
+                        return true;
                         //maybe save the move here...
                     }
                     boardSwapCandies(x, y, 0, -1, clone); //undo the swap
@@ -381,9 +378,9 @@ public class CandyTable {
                 if(x < sizeX-1) {
                     boardSwapCandies(x, y, 1, 0, clone);
                     rowLengths = checkRow(x + 1, y, clone);
-                    if (rowLengths[0] > 0 || rowLengths[1] > 0) {
+                    if (rowLengths[0] >= 3 || rowLengths[1] >= 3) {
                         //successful move
-                        movesLeft++;
+                        return true;
                         //maybe save the move here...
                     }
                     boardSwapCandies(x, y, 1, 0, clone); //undo the swap
@@ -394,16 +391,16 @@ public class CandyTable {
                 if(x > 0) {
                     boardSwapCandies(x, y, -1, 0, clone);
                     rowLengths = checkRow(x - 1, y, clone);
-                    if (rowLengths[0] > 0 || rowLengths[1] > 0) {
+                    if (rowLengths[0] >= 3 || rowLengths[1] >= 3) {
                         //successful move
-                        movesLeft++;
+                        return true;
                         //maybe save the move here...
                     }
                     boardSwapCandies(x, y, -1, 0, clone); //undo the swap
                 }
             }
         }
-        return movesLeft;
+        return false;
     }
 
     public ArrayList<ArrayList<Candy>> cloneBoard(){ // just clones a board. ????
@@ -418,6 +415,7 @@ public class CandyTable {
     public void boardSwapCandies(int x, int y, int dx, int dy, ArrayList<ArrayList<Candy>> board ){ // swapping to any board
         //This function swaps two candies for the given board.
         //It does not process any row detection or any score processing.
+        //This is useful for checking for potential moves.
 
         int newX = x + dx;
         int newY = y + dy;
@@ -432,10 +430,6 @@ public class CandyTable {
         //This is just for incrementing the score.
         score += amount;
 
-    }
-
-    public void setScore(double newScore){
-        score = newScore;
     }
 
     public int[] screenCoordsToGridCoords(int x, int y){
@@ -557,7 +551,15 @@ public class CandyTable {
         }
     }
 
-    public void drawToCanvas(Canvas canvas){ // drawing  candy to canvas. write down score.
+    public void updateGameEnd(){
+        if(score >= winningScore){
+            gameEnd = 1;
+        }else if(!hasRemainingMove()){
+            gameEnd = -1;
+        }
+    }
+
+    public void drawToCanvas(Canvas canvas){ // drawing candy to canvas. write down score.
         //This is called by the board view; canvas is also obtained from the board view.
 
         //Draw any border or background here. any kind of fanciness.
@@ -568,7 +570,7 @@ public class CandyTable {
             candy.drawToCanvas(canvas);
         }
 
-        //Draw any candy particles here
+        //Draw any candy pops here
         for(CandyPop pop:candyPopList){
             pop.drawToCanvas(canvas);
         }
@@ -578,18 +580,34 @@ public class CandyTable {
         float textSize = 75;
         String scoreText = "Score: " + (int)score;
         Paint textPaint = new Paint();
+        Paint bgPaint = new Paint();
+        bgPaint.setARGB(128, 0, 0, 0);
+        textPaint.setARGB(255, 255, 255, 255);
+
         textPaint.setTextSize(textSize);
         float textWidth = textPaint.measureText(scoreText) + 10;
-        textPaint.setARGB(128, 0, 0, 0);
 
-        canvas.drawRect(0, 0, (int)textWidth, (int)(textSize*0.9), textPaint);
+        canvas.drawRect(0, 0, (int)textWidth, (int)(textSize*0.9), bgPaint);
 
-        textPaint.setARGB(255, 255, 255, 255);
         canvas.drawText(scoreText, 10, (int)(10 + textSize * 0.65), textPaint);
 
-
         //Draw anything else here?
+        if(gameEnd != 0){
+            bgPaint.setARGB(160, 0, 0, 0);
 
+            canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), bgPaint);
+            String gameText1 = "";
+            String gameText2 = "";
+            if(gameEnd >0){
+                gameText1 = "You reached "+ (int)(winningScore) + " points!";
+                gameText2 = "Congrats on your diabeetus!";
+            }else if(gameEnd < 0){
+                gameText1 = "No possible moves remaining :(";
+            }
+
+            canvas.drawText(gameText1, 0, canvas.getHeight()/2 - textSize/2, textPaint);
+            canvas.drawText(gameText2, 0, canvas.getHeight()/2 + textSize/2, textPaint);
+        }
 
     }
 }
