@@ -20,8 +20,8 @@ How to play game:
 3. There is a score count in the top right corner for when candies match 3 or more
     a. For every 3 matched, it is worth 100 points.(Figure 1)
     b. For every combo it is worth: (Figure 2)
-        i. 100* combo^n ; n = number of combos after the first matched
+        i. 200* combo * combo
 
 
 How to finish the game:
-1. Go over 1,000,000 points or it finishes if no possible moves. (Figure1 & 2)
+1. Go over 1,000,000 points or it finishes if no possible moves. (Figure 3)
