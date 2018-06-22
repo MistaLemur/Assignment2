@@ -1,5 +1,11 @@
-package teambebop.assignment2;
+/*
+Author: Anthony SuVasquez
 
+This file declares the CandyTable class. 
+This represents the board of candy objects, and has many functions for swapping candies, checking for lines, and creating new candies.
+*/
+
+package teambebop.assignment2;
 
 import android.graphics.Canvas;
 import java.util.Random;
@@ -7,9 +13,6 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.Paint;
-/**
- * Created by d4rk3_000 on 4/23/2017.
- */
 
 public class CandyTable {
 
