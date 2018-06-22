@@ -1,3 +1,9 @@
+/*
+Author: Anthony SuVasquez
+
+This file contains the entry-point of this application.
+*/
+
 package teambebop.assignment2;
 
 import android.app.Activity;
