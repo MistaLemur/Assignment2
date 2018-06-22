@@ -1,3 +1,9 @@
+/*
+Author: Anthony SuVasquez
+
+this file contains the definition of the CandyPop class. This is the particle effect that happens when candies are consumed.
+*/
+
 package teambebop.assignment2;
 
 import android.content.Context;
@@ -5,10 +11,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-
-/**
- * Created by Admin on 5/5/2017.
- */
 
 public class CandyPop {
     //A candypop is just the effect that remains on the screen after you pop a candy. It's very similar to the candy and animation class
