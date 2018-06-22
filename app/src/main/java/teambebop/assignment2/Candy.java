@@ -1,3 +1,7 @@
+/*
+Author: Byron and Anthony
+*/
+
 package teambebop.assignment2;
 
 import android.graphics.Bitmap;
@@ -6,10 +10,6 @@ import android.graphics.Rect;
 import android.content.Context;
 import android.graphics.Canvas;
 
-
-/**
- * Created by Byron on 4/23/2017.
- */
 
 public class Candy {
 
