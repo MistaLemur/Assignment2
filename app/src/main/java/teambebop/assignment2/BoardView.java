@@ -1,3 +1,7 @@
+/*
+Author: Anthony SuVasquez
+*/
+
 package teambebop.assignment2;
 
 import android.view.SurfaceView;
@@ -13,11 +17,6 @@ import java.lang.Thread;
 
 import java.util.ArrayList;
 import java.util.List;
-
-//lol
-/**
- * Created by d4rk3_000 on 4/23/2017.
- */
 
 public class BoardView extends SurfaceView implements SurfaceHolder.Callback{
 
